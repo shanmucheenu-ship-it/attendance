@@ -4,7 +4,7 @@ export const mockDepartments = [
   { name: "Civil",                            code: "CIVIL", total: 100, present: 88,  absent: 12 },
   { name: "Electrical and Electronic",        code: "EEE",   total: 90,  present: 78,  absent: 12 },
   { name: "Electronics and Communication",    code: "ECE",   total: 110, present: 96,  absent: 14 },
-  { name: "Computer",                         code: "COMP",  total: 174, present: 148, absent: 26 },
+  { name: "Computer",                         code: "COMP",  total: 173, present: 148, absent: 26 },
   { name: "Communication and Computer Networking", code: "CCN", total: 70, present: 62, absent: 8 },
 ];
 
@@ -46,6 +46,55 @@ const cse2ndYearA = [
   { regNo: "26504018", name: "NAZREEN", gender: "Female" },
   { regNo: "26504019", name: "NIPUN SURYA S", gender: "Male" },
   { regNo: "26504020", name: "NIRANJAN V", gender: "Male" }
+];
+
+const cse2ndYearB = [
+  { regNo: "26504021", name: "NISHANTH M", gender: "Male" },
+  { regNo: "26504022", name: "NITHIN S N", gender: "Male" },
+  { regNo: "26504023", name: "NITHIN S", gender: "Male" },
+  { regNo: "26504024", name: "OVIYA S", gender: "Female" },
+  { regNo: "26504025", name: "PAUL JEFFERSON J", gender: "Male" },
+  { regNo: "26504026", name: "PRADUSH KRISHNA P", gender: "Male" },
+  { regNo: "26504027", name: "PREAM CHANDH M P", gender: "Male" },
+  { regNo: "26504028", name: "RAHUL B", gender: "Male" },
+  { regNo: "26504029", name: "RITHIKA R J", gender: "Female" },
+  { regNo: "26504030", name: "SABAREESWARAN G", gender: "Male" },
+  { regNo: "26504031", name: "SACHIN K S", gender: "Male" },
+  { regNo: "26504032", name: "SACHIN V", gender: "Male" },
+  { regNo: "26504033", name: "SAKTHILAKSHMAN R", gender: "Male" },
+  { regNo: "26504034", name: "SANGESHRAM M", gender: "Male" },
+  { regNo: "26504035", name: "SARVESH R", gender: "Male" },
+  { regNo: "26504036", name: "SASTHIK M", gender: "Male" },
+  { regNo: "26504037", name: "SELVAPRABHAKARAN R", gender: "Male" },
+  { regNo: "26504038", name: "SHAKTHI SARAVANAN R", gender: "Male" },
+  { regNo: "26504039", name: "SHALINI S", gender: "Female" },
+  { regNo: "26504040", name: "SHAMIKSHA M", gender: "Female" },
+  { regNo: "26504041", name: "SHAMITHA SHREE R", gender: "Female" },
+  { regNo: "26504042", name: "SHEALIN K", gender: "Female" },
+  { regNo: "26504043", name: "SHREE KUMARAN E", gender: "Male" },
+  { regNo: "26504044", name: "SIVARAAMAKRISHNAN R", gender: "Male" },
+  { regNo: "26504045", name: "SRIDHER A", gender: "Male" },
+  { regNo: "26504046", name: "SRIKOUSHIK S", gender: "Male" },
+  { regNo: "26504047", name: "SRILINGAN R", gender: "Male" },
+  { regNo: "26504048", name: "SUBIKA K R", gender: "Female" },
+  { regNo: "26504049", name: "SUJAY S", gender: "Male" },
+  { regNo: "26504050", name: "TEJAS R", gender: "Male" },
+  { regNo: "26504051", name: "VARSHA KUMARI D", gender: "Female" },
+  { regNo: "26504052", name: "VIJAYKRISHNA S", gender: "Male" },
+  { regNo: "26504055", name: "YESHWIN J A", gender: "Male" },
+  { regNo: "TEMP_B_74", name: "ROHIT R", gender: "Male" },
+  { regNo: "TEMP_B_75", name: "RAGUNATH S", gender: "Male" },
+  { regNo: "TEMP_B_76", name: "PAVAN KAPILESH V", gender: "Male" },
+  { regNo: "TEMP_B_78", name: "GURU R", gender: "Male" },
+  { regNo: "TEMP_B_79", name: "GOKUL K", gender: "Male" },
+  { regNo: "TEMP_B_80", name: "ADESH", gender: "Male" },
+  { regNo: "TEMP_B_81", name: "DAVID JEBAKUMAR S", gender: "Male" },
+  { regNo: "TEMP_B_82", name: "NIRMAL KUMAR S", gender: "Male" },
+  { regNo: "TEMP_B_83", name: "NAVEEN", gender: "Male" },
+  { regNo: "TEMP_B_84", name: "GIRINATH", gender: "Male" },
+  { regNo: "TEMP_B_85", name: "HARI KIRUBA V", gender: "Male" },
+  { regNo: "TEMP_B_86", name: "SARAVANAN A", gender: "Male" },
+  { regNo: "TEMP_B_87", name: "SANTHOSH KUMAR M", gender: "Male" }
 ];
 
 const cse3rdYearA = [
@@ -160,7 +209,7 @@ const generateStudents = () => {
   const config = [
     { name: "Automobile", code: "AUTO", classes: [{ year: "2nd Year", section: "Single", count: 35 }, { year: "3rd Year", section: "Single", count: 29 }] },
     { name: "Civil", code: "CIVIL", classes: [{ year: "2nd Year", section: "Single", count: 21 }, { year: "3rd Year", section: "Single", count: 25 }] },
-    { name: "Computer", code: "COMP", classes: [{ year: "2nd Year", section: "A", count: 37, custom: cse2ndYearA }, { year: "2nd Year", section: "B", count: 45 }, { year: "3rd Year", section: "A", count: 44, custom: cse3rdYearA }, { year: "3rd Year", section: "B", count: 46, custom: cse3rdYearB }] },
+    { name: "Computer", code: "COMP", classes: [{ year: "2nd Year", section: "A", count: 37, custom: cse2ndYearA }, { year: "2nd Year", section: "B", count: 46, custom: cse2ndYearB }, { year: "3rd Year", section: "A", count: 44, custom: cse3rdYearA }, { year: "3rd Year", section: "B", count: 46, custom: cse3rdYearB }] },
     { name: "Mechanical", code: "MECH", classes: [{ year: "2nd Year", section: "Single", count: 66 }, { year: "3rd Year", section: "Single", count: 60 }] },
     { name: "Electrical and Electronic", code: "EEE", classes: [{ year: "2nd Year", section: "Single", count: 43 }, { year: "3rd Year", section: "Single", count: 38 }] },
     { name: "Electronics and Communication", code: "ECE", classes: [{ year: "2nd Year", section: "Single", count: 31 }, { year: "3rd Year", section: "Single", count: 36 }] },

@@ -214,13 +214,48 @@ export const AppProvider = ({ children }) => {
       forwarded_to_admin: role !== 'faculty'
     };
     
-    const { error } = await supabase.from('attendance_sessions').insert([payload]);
+    // First clear duplicate if it exists (violates unique_attendance_per_class_date constraint in DB)
+    const { error: deleteError } = await supabase
+      .from('attendance_sessions')
+      .delete()
+      .eq('date', payload.date)
+      .eq('department', payload.department)
+      .eq('year', payload.year)
+      .eq('section', payload.section);
+      
+    if (deleteError) {
+      console.error("Supabase delete duplicate session error:", deleteError);
+    }
+    
+    const { data, error } = await supabase.from('attendance_sessions').insert([payload]).select();
     if (error) {
       console.error("Supabase insert attendance_session error:", error);
       showToast("Supabase Error: " + error.message, 'error');
       return;
     }
-    showToast("Attendance saved successfully", 'success');
+    
+    if (data && data[0]) {
+      const newSession = {
+        id: data[0].id,
+        date: data[0].date,
+        department: data[0].department,
+        year: data[0].year,
+        section: data[0].section,
+        absenteesCount: Number(data[0].absentees_count),
+        status: data[0].status === 'Pending Approval' ? 'Pending' : data[0].status,
+        forwardedToAdmin: data[0].forwarded_to_admin
+      };
+      setAttendance(prev => {
+        const filtered = prev.submittedSessions.filter(
+          s => !(s.date === newSession.date && s.department === newSession.department && s.year === newSession.year && s.section === newSession.section)
+        );
+        return {
+          ...prev,
+          submittedSessions: [...filtered, newSession]
+        };
+      });
+      showToast("Attendance saved successfully", 'success');
+    }
   };
 
   const approveSubmission = async (id) => {
@@ -229,6 +264,10 @@ export const AppProvider = ({ children }) => {
       console.error("Supabase approveSubmission error:", error);
       showToast('Error approving submission: ' + error.message, 'error');
     } else {
+      setAttendance(prev => ({
+        ...prev,
+        submittedSessions: prev.submittedSessions.map(s => s.id === id ? { ...s, status: 'Approved', forwardedToAdmin: true } : s)
+      }));
       showToast('Submission approved successfully', 'success');
     }
   };
@@ -239,6 +278,10 @@ export const AppProvider = ({ children }) => {
       console.error("Supabase rejectSubmission error:", error);
       showToast('Error rejecting submission: ' + error.message, 'error');
     } else {
+      setAttendance(prev => ({
+        ...prev,
+        submittedSessions: prev.submittedSessions.map(s => s.id === id ? { ...s, status: 'Rejected' } : s)
+      }));
       showToast('Submission rejected successfully', 'success');
     }
   };
@@ -249,6 +292,10 @@ export const AppProvider = ({ children }) => {
       console.error("Supabase forwardSubmission error:", error);
       showToast('Error forwarding submission: ' + error.message, 'error');
     } else {
+      setAttendance(prev => ({
+        ...prev,
+        submittedSessions: prev.submittedSessions.map(s => s.id === id ? { ...s, forwardedToAdmin: true } : s)
+      }));
       showToast('Submission forwarded successfully', 'success');
     }
   };
@@ -259,6 +306,10 @@ export const AppProvider = ({ children }) => {
       console.error("Supabase deleteSubmission error:", error);
       showToast('Error deleting submission: ' + error.message, 'error');
     } else {
+      setAttendance(prev => ({
+        ...prev,
+        submittedSessions: prev.submittedSessions.filter(s => s.id !== id)
+      }));
       showToast('Submission deleted successfully', 'success');
     }
   };
@@ -270,6 +321,10 @@ export const AppProvider = ({ children }) => {
         console.error("Supabase clearSubmissions error:", error);
         showToast('Error clearing submissions: ' + error.message, 'error');
       } else {
+        setAttendance(prev => ({
+          ...prev,
+          submittedSessions: prev.submittedSessions.filter(s => s.department !== department)
+        }));
         showToast('Submissions cleared successfully', 'success');
       }
     }
