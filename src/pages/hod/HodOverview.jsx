@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Ca
 import { BarChart } from '../../components/charts/BarChart';
 
 const HodOverview = () => {
-  const { auth, students, attendance, clearSubmissions, showToast, approveSubmission, rejectSubmission } = useContext(AppContext);
+  const { auth, students, attendance, clearSubmissions, showToast, approveSubmission, rejectSubmission, sendAlert } = useContext(AppContext);
   const deptStudents = students.filter(s => s.department === auth.user.department);
   const totalStudents = deptStudents.length;
 
@@ -21,6 +21,22 @@ const HodOverview = () => {
   
   // Approved submissions today
   const approvedToday = deptSubmissions.filter(s => s.status === 'Approved' && s.date === today);
+
+  // Missing submissions today
+  const yearsList = ['2nd Year', '3rd Year'];
+  const sectionsList = auth.user.department === 'Computer' ? ['A', 'B'] : ['Single'];
+
+  const missingSubmissions = [];
+  yearsList.forEach(y => {
+    sectionsList.forEach(sec => {
+      const hasSub = deptSubmissions.some(
+        s => s.date === today && s.year === y && s.section === sec && s.status !== 'Rejected'
+      );
+      if (!hasSub) {
+        missingSubmissions.push({ year: y, section: sec });
+      }
+    });
+  });
 
   // Dynamic calculations for HOD overview stats today
   let todayAbsent = 0;
@@ -86,8 +102,46 @@ const HodOverview = () => {
           </CardContent>
         </Card>
 
+        {/* Today's Missing Submissions Card */}
+        <Card className="lg:col-span-1 shadow-sm border-red-100">
+          <CardHeader className="bg-red-50/50 flex flex-row items-center justify-between">
+            <CardTitle className="text-red-800 flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-red-600" />
+              Today's Missing Submissions ({missingSubmissions.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-4">
+            {missingSubmissions.length === 0 ? (
+              <div className="text-center py-8">
+                <span className="text-4xl">🎉</span>
+                <p className="text-sm text-green-600 font-bold mt-2">All classes submitted!</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {missingSubmissions.map((item, idx) => (
+                  <div key={idx} className="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-100">
+                    <div>
+                      <p className="font-semibold text-slate-700 text-sm">{item.year}</p>
+                      <p className="text-xs text-slate-400 font-medium">{item.section === 'Single' ? 'Single Class' : `Section ${item.section}`}</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        sendAlert(auth.user.department, `Attendance has not been submitted for ${item.year} - Section ${item.section === 'Single' ? 'Single Class' : item.section} today.`);
+                        showToast(`Alert sent to faculty for ${item.year} Section ${item.section === 'Single' ? '' : item.section}`, 'success');
+                      }}
+                      className="bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors border border-red-200 cursor-pointer animate-pulse"
+                    >
+                      Send Alert
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Pending Approvals List */}
-        <Card className="lg:col-span-2 shadow-sm border-amber-100">
+        <Card className="lg:col-span-1 shadow-sm border-amber-100">
           <CardHeader className="bg-amber-50/50 flex flex-row items-center justify-between">
             <CardTitle className="text-amber-800 flex items-center gap-2">
               <AlertCircle className="w-5 h-5 text-amber-600" />

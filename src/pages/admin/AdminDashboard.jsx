@@ -29,7 +29,7 @@ const AdminDashboard = () => {
     const sub = forwardedSubmissions.find(
       s => s.department === deptName && s.year === year && s.section === section
     );
-    return sub ? Number(sub.absenteesCount) : 0;
+    return sub ? Number(sub.absenteesCount) : '-';
   };
 
   const handlePrint = (dept, year, section) => {
@@ -117,31 +117,46 @@ const AdminDashboard = () => {
 
   const getColTotal = (year, section) => {
     let sum = 0;
+    let hasData = false;
     depts.forEach(d => {
-      sum += getSubAbsent(d, year, section);
+      const val = getSubAbsent(d, year, section);
+      if (typeof val === 'number') {
+        sum += val;
+        hasData = true;
+      }
     });
-    return sum;
+    return hasData ? sum : '-';
   };
 
   const getDeptTotal = (deptName) => {
     let sum = 0;
+    let hasData = false;
     const years = ['2nd Year', '3rd Year'];
     const sections = deptName === 'Computer' ? ['A', 'B'] : ['Single'];
     
     years.forEach(y => {
       sections.forEach(s => {
-        sum += getSubAbsent(deptName, y, s);
+        const val = getSubAbsent(deptName, y, s);
+        if (typeof val === 'number') {
+          sum += val;
+          hasData = true;
+        }
       });
     });
-    return sum;
+    return hasData ? sum : '-';
   };
 
   const getGrandTotal = () => {
     let sum = 0;
+    let hasData = false;
     depts.forEach(d => {
-      sum += getDeptTotal(d);
+      const val = getDeptTotal(d);
+      if (typeof val === 'number') {
+        sum += val;
+        hasData = true;
+      }
     });
-    return sum;
+    return hasData ? sum : '-';
   };
 
   // Analytics wave chart filters
