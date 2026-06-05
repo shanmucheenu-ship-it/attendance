@@ -1,0 +1,6 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "npm install --prefix AMS",
+  "buildCommand": "npm run build --prefix AMS",
+  "outputDirectory": "AMS/dist"
+}
