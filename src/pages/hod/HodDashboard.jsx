@@ -94,9 +94,9 @@ const HodDashboard = () => {
     <PageWrapper title="Mark Attendance">
       <FilterBar filters={filters} onFilterChange={handleFilterChange} />
       
-      <div className="mt-6 mb-4 flex items-center justify-between bg-surface-white p-4 rounded-xl shadow-sm border border-border-gray">
+      <div className="mt-6 mb-4 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-white p-4 rounded-xl shadow-sm border border-border-gray">
         <span className="text-text-secondary font-medium">Showing {displayedStudents.length} students</span>
-        <div className="flex space-x-6 font-semibold items-center">
+        <div className="flex flex-wrap gap-4 font-semibold items-center">
           <span className="text-success-green">✅ Present: {presentCount}</span>
           <span className="text-danger-red">❌ Absent: {absentCount}</span>
           <span className="text-indigo-600">🏖️ Leave: {leaveCount}</span>
@@ -109,18 +109,18 @@ const HodDashboard = () => {
         onToggleAttendance={handleToggleAttendance} 
       />
 
-      <div className="fixed bottom-0 left-60 right-0 bg-surface-white border-t border-border-gray p-4 flex justify-between items-center z-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-        <div className="space-x-3">
-          <Button variant="ghost" className="text-danger-red hover:text-red-700 hover:bg-red-50" onClick={handleReset}>
+      <div className="fixed bottom-0 left-0 md:left-64 right-0 bg-surface-white border-t border-border-gray p-4 flex flex-col sm:flex-row gap-4 justify-between items-center z-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
+          <Button variant="ghost" className="text-danger-red hover:text-red-700 hover:bg-red-50 text-sm py-2 px-3" onClick={handleReset}>
             Reset to Present
           </Button>
-          <Button variant="ghost" className="text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50" onClick={handleMarkLeave}>
+          <Button variant="ghost" className="text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 text-sm py-2 px-3" onClick={handleMarkLeave}>
             🏖️ Mark All Leave (Festival)
           </Button>
         </div>
-        <div className="space-x-4">
-          <Button variant="outline" onClick={handleSaveDraft}>Save Draft</Button>
-          <Button onClick={handleNext}>Next: View Summary &rarr;</Button>
+        <div className="flex gap-3 w-full sm:w-auto justify-center sm:justify-end">
+          <Button variant="outline" className="w-1/2 sm:w-auto py-2" onClick={handleSaveDraft}>Save Draft</Button>
+          <Button className="w-1/2 sm:w-auto py-2" onClick={handleNext}>Next: View Summary &rarr;</Button>
         </div>
       </div>
       <div className="h-20"></div> {/* Spacer for fixed bottom bar */}

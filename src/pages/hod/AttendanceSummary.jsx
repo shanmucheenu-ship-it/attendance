@@ -139,12 +139,13 @@ const AttendanceSummary = () => {
         <AttendanceTable students={students} readOnly={true} />
       </div>
 
-      <div className="fixed bottom-0 left-60 right-0 bg-surface-white border-t border-border-gray p-4 flex justify-between items-center z-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-        <Button variant="ghost" onClick={() => navigate(`/${auth.role}/dashboard`)}>
+      <div className="fixed bottom-0 left-0 md:left-64 right-0 bg-surface-white border-t border-border-gray p-4 flex justify-between items-center z-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        <Button variant="ghost" className="text-sm py-2 px-3" onClick={() => navigate(`/${auth.role}/dashboard`)}>
           &larr; Back to Attendance
         </Button>
         <Button 
           variant={submitted ? "outline" : "success"} 
+          className="text-sm py-2 px-4 font-bold"
           onClick={handleConfirm}
           disabled={submitted}
         >

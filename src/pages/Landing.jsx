@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { GraduationCap, LayoutDashboard, UserCog, ShieldCheck } from 'lucide-react';
 import { StarsBackground } from '../components/ui/StarsBackground';
+import { supabase } from '../lib/supabase';
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -11,17 +12,20 @@ const Landing = () => {
   useEffect(() => {
     const checkConnection = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/health');
-        const data = await response.json();
-        if (data.database === 'Connected') {
-          console.log("Supabase connected successfully via Express API");
-          setSupabaseStatus('connected');
-        } else {
-          console.log("Supabase connection error via Express API:", data.dbError);
+        const { error } = await supabase
+          .from('attendance_sessions')
+          .select('id')
+          .limit(1);
+        
+        if (error && error.code !== 'PGRST205') {
+          console.error("Supabase connection error:", error);
           setSupabaseStatus('error');
+        } else {
+          console.log("Supabase connected successfully from frontend client");
+          setSupabaseStatus('connected');
         }
       } catch (err) {
-        console.log("Express API/Supabase error:", err);
+        console.error("Supabase direct connection exception:", err);
         setSupabaseStatus('error');
       }
     };
