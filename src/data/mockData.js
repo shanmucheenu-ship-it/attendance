@@ -1,10 +1,10 @@
 export const mockDepartments = [
-  { name: "Mechanical", code: "MECH", total: 120, present: 105, absent: 15 },
-  { name: "Automobile", code: "AUTO", total: 80, present: 70, absent: 10 },
-  { name: "Civil", code: "CIVIL", total: 100, present: 88, absent: 12 },
-  { name: "Electrical and Electronic", code: "EEE", total: 90, present: 78, absent: 12 },
-  { name: "Electronics and Communication", code: "ECE", total: 110, present: 96, absent: 14 },
-  { name: "Computer", code: "COMP", total: 173, present: 148, absent: 26 },
+  { name: "Mechanical",                       code: "MECH",  total: 120, present: 105, absent: 15 },
+  { name: "Automobile",                       code: "AUTO",  total: 80,  present: 70,  absent: 10 },
+  { name: "Civil",                            code: "CIVIL", total: 100, present: 88,  absent: 12 },
+  { name: "Electrical and Electronic",        code: "EEE",   total: 90,  present: 78,  absent: 12 },
+  { name: "Electronics and Communication",    code: "ECE",   total: 110, present: 96,  absent: 14 },
+  { name: "Computer",                         code: "COMP",  total: 173, present: 148, absent: 26 },
   { name: "Communication and Computer Networking", code: "CCN", total: 70, present: 62, absent: 8 },
 ];
 
@@ -261,22 +261,22 @@ const generateStudents = () => {
 export const mockStudents = generateStudents();
 
 export const defaultUsers = [
-  { id: '1', name: 'System Admin', department: 'All', username: 'superadmin', password: 'super123', role: 'superadmin' },
-  { id: '2', name: 'Principal', department: 'All', username: 'admin', password: 'admin123', role: 'admin' },
-  { id: '3', name: 'HOD Mechanical', department: 'Mechanical', username: 'hod_mech', password: 'hod123', role: 'hod' },
-  { id: '4', name: 'HOD Automobile', department: 'Automobile', username: 'hod_auto', password: 'hod123', role: 'hod' },
-  { id: '5', name: 'HOD Civil', department: 'Civil', username: 'hod_civil', password: 'hod123', role: 'hod' },
-  { id: '6', name: 'HOD Electrical and Electronic', department: 'Electrical and Electronic', username: 'hod_eee', password: 'hod123', role: 'hod' },
-  { id: '7', name: 'HOD Electronics and Communication', department: 'Electronics and Communication', username: 'hod_ece', password: 'hod123', role: 'hod' },
-  { id: '8', name: 'HOD Computer', department: 'Computer', username: 'hod_comp', password: 'hod123', role: 'hod' },
-  { id: '9', name: 'HOD CCN', department: 'Communication and Computer Networking', username: 'hod_ccn', password: 'hod123', role: 'hod' },
-  { id: '10', name: 'Faculty Mechanical', department: 'Mechanical', username: 'fac_mech', password: 'fac123', role: 'faculty' },
-  { id: '11', name: 'Faculty Automobile', department: 'Automobile', username: 'fac_auto', password: 'fac123', role: 'faculty' },
-  { id: '12', name: 'Faculty Civil', department: 'Civil', username: 'fac_civil', password: 'fac123', role: 'faculty' },
-  { id: '13', name: 'Faculty EEE', department: 'Electrical and Electronic', username: 'fac_eee', password: 'fac123', role: 'faculty' },
-  { id: '14', name: 'Faculty ECE', department: 'Electronics and Communication', username: 'fac_ece', password: 'fac123', role: 'faculty' },
-  { id: '15', name: 'Faculty Computer', department: 'Computer', username: 'fac_comp', password: 'fac123', role: 'faculty' },
-  { id: '16', name: 'Faculty CCN', department: 'Communication and Computer Networking', username: 'fac_ccn', password: 'fac123', role: 'faculty' },
+  { id: '1',  name: 'System Admin',                    department: 'All',                              username: 'superadmin',  password: 'super123',  role: 'superadmin' },
+  { id: '2',  name: 'Principal',                       department: 'All',                              username: 'admin',        password: 'admin123',  role: 'admin'      },
+  { id: '3',  name: 'HOD Mechanical',                  department: 'Mechanical',                       username: 'hod_mech',     password: 'hod123',    role: 'hod'        },
+  { id: '4',  name: 'HOD Automobile',                  department: 'Automobile',                       username: 'hod_auto',     password: 'hod123',    role: 'hod'        },
+  { id: '5',  name: 'HOD Civil',                       department: 'Civil',                            username: 'hod_civil',    password: 'hod123',    role: 'hod'        },
+  { id: '6',  name: 'HOD Electrical and Electronic',   department: 'Electrical and Electronic',        username: 'hod_eee',      password: 'hod123',    role: 'hod'        },
+  { id: '7',  name: 'HOD Electronics and Communication', department: 'Electronics and Communication',  username: 'hod_ece',      password: 'hod123',    role: 'hod'        },
+  { id: '8',  name: 'HOD Computer',                    department: 'Computer',                         username: 'hod_comp',     password: 'hod123',    role: 'hod'        },
+  { id: '9',  name: 'HOD CCN',                         department: 'Communication and Computer Networking', username: 'hod_ccn', password: 'hod123',    role: 'hod'        },
+  { id: '10', name: 'Faculty Mechanical',              department: 'Mechanical',                       username: 'fac_mech',     password: 'fac123',    role: 'faculty'    },
+  { id: '11', name: 'Faculty Automobile',              department: 'Automobile',                       username: 'fac_auto',     password: 'fac123',    role: 'faculty'    },
+  { id: '12', name: 'Faculty Civil',                   department: 'Civil',                            username: 'fac_civil',    password: 'fac123',    role: 'faculty'    },
+  { id: '13', name: 'Faculty EEE',                     department: 'Electrical and Electronic',        username: 'fac_eee',      password: 'fac123',    role: 'faculty'    },
+  { id: '14', name: 'Faculty ECE',                     department: 'Electronics and Communication',    username: 'fac_ece',      password: 'fac123',    role: 'faculty'    },
+  { id: '15', name: 'Faculty Computer',                department: 'Computer',                         username: 'fac_comp',     password: 'fac123',    role: 'faculty'    },
+  { id: '16', name: 'Faculty CCN',                     department: 'Communication and Computer Networking', username: 'fac_ccn', password: 'fac123',    role: 'faculty'    },
 ];
 
 export const mockSubmittedSessions = [

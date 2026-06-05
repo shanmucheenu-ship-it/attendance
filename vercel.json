@@ -1,6 +1,26 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "npm install --prefix AMS",
-  "buildCommand": "npm run build --prefix AMS",
-  "outputDirectory": "AMS/dist"
+  "version": 2,
+  "builds": [
+    {
+      "src": "server/server.cjs",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "server/server.cjs"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "$1"
+    }
+  ]
 }
