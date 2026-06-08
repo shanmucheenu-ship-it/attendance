@@ -74,11 +74,10 @@ const AttendanceSummary = () => {
   const adjustedYrPresent = Math.max(0, yrTotal - adjustedYrAbsent);
   const yrPercentage = yrTotal > 0 ? Math.round((adjustedYrPresent / yrTotal) * 100) : 100;
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     const sessionWithCount = { ...session, absenteesCount: currentAbsentees };
-    submitAttendance(sessionWithCount, auth.role);
+    await submitAttendance(sessionWithCount, auth.role);
     setSubmitted(true);
-    showToast(`✅ Attendance submitted successfully for ${department} – ${year} Section ${section}`);
   };
 
   return (
