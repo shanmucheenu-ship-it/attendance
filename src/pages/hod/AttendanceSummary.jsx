@@ -34,13 +34,16 @@ const AttendanceSummary = () => {
   const secPresent = students.filter(s => s.status === 'Present').length;
   const secAbsent = students.filter(s => s.status === 'Absent').length;
   const secLeave = students.filter(s => s.status === 'Leave').length;
+
+  const [editedAbsentees, setEditedAbsentees] = useState(null);
+  const currentAbsentees = editedAbsentees !== null ? editedAbsentees : secAbsent;
   
-  const validSecTotal = secPresent + secAbsent;
-  const secPercentage = validSecTotal > 0 ? Math.round((secPresent / validSecTotal) * 100) : (secLeave > 0 ? 100 : 0);
+  const adjustedPresent = Math.max(0, secTotal - currentAbsentees);
+  const secPercentage = secTotal > 0 ? Math.round((adjustedPresent / secTotal) * 100) : 100;
 
   const chartData = [
-    { name: 'Present', value: secPresent },
-    { name: 'Absent', value: secAbsent }
+    { name: 'Present', value: adjustedPresent },
+    { name: 'Absent', value: currentAbsentees }
   ];
   if (secLeave > 0) {
     chartData.push({ name: 'Leave', value: secLeave });
@@ -56,7 +59,7 @@ const AttendanceSummary = () => {
     // If in another section, check if submitted today
     const submittedSec = attendance.submittedSessions.find(sub => sub.year === year && sub.section === s.section && sub.department === department && sub.date === date);
     if (submittedSec) {
-      return submittedSec.students.find(ss => ss.id === s.id) || { ...s, status: 'Present' };
+       return submittedSec.students.find(ss => ss.id === s.id) || { ...s, status: 'Present' };
     }
     // Fallback default mock for unsubmitted sections to make rollup look realistic
     return { ...s, status: 'Present' };
@@ -65,13 +68,14 @@ const AttendanceSummary = () => {
   const yrTotal = yearRollup.length;
   const yrPresent = yearRollup.filter(s => s.status === 'Present').length;
   const yrAbsent = yearRollup.filter(s => s.status === 'Absent').length;
-  const yrLeave = yearRollup.filter(s => s.status === 'Leave').length;
   
-  const validYrTotal = yrPresent + yrAbsent;
-  const yrPercentage = validYrTotal > 0 ? Math.round((yrPresent / validYrTotal) * 100) : (yrLeave > 0 ? 100 : 0);
+  const diff = currentAbsentees - secAbsent;
+  const adjustedYrAbsent = Math.max(0, yrAbsent + diff);
+  const adjustedYrPresent = Math.max(0, yrTotal - adjustedYrAbsent);
+  const yrPercentage = yrTotal > 0 ? Math.round((adjustedYrPresent / yrTotal) * 100) : 100;
 
   const handleConfirm = () => {
-    const sessionWithCount = { ...session, absenteesCount: secAbsent };
+    const sessionWithCount = { ...session, absenteesCount: currentAbsentees };
     submitAttendance(sessionWithCount, auth.role);
     setSubmitted(true);
     showToast(`✅ Attendance submitted successfully for ${department} – ${year} Section ${section}`);
@@ -81,11 +85,28 @@ const AttendanceSummary = () => {
     <PageWrapper title={`Summary: ${year} Section ${section}`}>
       
       <h3 className="text-lg font-semibold text-text-primary mb-4">Section Level ({year} - Section {section})</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">
         <StatCard title="Section Students" value={secTotal} icon={Users} colorClass="bg-blue-100 text-blue-600" delay={0.1} />
-        <StatCard title="Section Present" value={secPresent} icon={UserCheck} colorClass="bg-green-100 text-green-600" delay={0.2} />
-        <StatCard title="Section Absent" value={secAbsent} icon={UserX} colorClass="bg-red-100 text-red-600" delay={0.3} />
+        <StatCard title="Section Present" value={adjustedPresent} icon={UserCheck} colorClass="bg-green-100 text-green-600" delay={0.2} />
+        <StatCard title="Section Absent" value={currentAbsentees} icon={UserX} colorClass="bg-red-100 text-red-600" delay={0.3} />
         <StatCard title="Section %" value={`${secPercentage}%`} icon={TrendingUp} colorClass="bg-amber-100 text-amber-600" delay={0.4} />
+      </div>
+
+      <div className="bg-amber-50/50 border border-amber-200/60 p-4 rounded-2xl mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h4 className="font-bold text-amber-800 text-sm">Need to adjust the absentee count?</h4>
+          <p className="text-xs text-amber-600 font-medium">You can override the total number of absentees sent to the Principal here.</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <label className="text-xs font-bold text-amber-800 uppercase">Absentees Count:</label>
+          <input
+            type="number"
+            value={currentAbsentees}
+            onChange={(e) => setEditedAbsentees(Math.max(0, parseInt(e.target.value) || 0))}
+            className="w-24 px-3 py-1.5 text-center font-bold text-red-600 border border-amber-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white shadow-sm"
+            min="0"
+          />
+        </div>
       </div>
 
       <h3 className="text-lg font-semibold text-text-primary mb-4 mt-8">Year Level Rollup ({year} All Sections)</h3>

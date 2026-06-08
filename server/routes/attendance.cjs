@@ -72,12 +72,20 @@ router.post('/', async (req, res) => {
 // 3. PUT /api/attendance/:id - Update status (Approve/Reject)
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { status } = req.body;
+  const { status, absentees_count } = req.body;
 
   try {
+    const updatePayload = { status };
+    if (absentees_count !== undefined && absentees_count !== null) {
+      updatePayload.absentees_count = Number(absentees_count);
+    }
+    if (status === 'Approved') {
+      updatePayload.forwarded_to_admin = true;
+    }
+
     const { data, error } = await supabase
       .from('attendance_sessions')
-      .update({ status })
+      .update(updatePayload)
       .eq('id', id)
       .select();
 

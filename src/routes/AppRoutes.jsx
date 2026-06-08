@@ -12,6 +12,8 @@ import AdminDashboard from '../pages/admin/AdminDashboard';
 
 // HOD
 import HodOverview from '../pages/hod/HodOverview';
+import HodDashboard from '../pages/hod/HodDashboard';
+import AttendanceSummary from '../pages/hod/AttendanceSummary';
 
 // Super Admin & Faculty placeholders (we will create these)
 import SuperAdminDashboard from '../pages/superadmin/SuperAdminDashboard';
@@ -61,10 +63,19 @@ const AppRoutes = () => {
         </ProtectedRoute>
       } />
 
-      {/* HOD Routes */}
       <Route path="/hod/dashboard" element={
         <ProtectedRoute allowedRole="hod">
           <HodOverview />
+        </ProtectedRoute>
+      } />
+      <Route path="/hod/mark" element={
+        <ProtectedRoute allowedRole="hod">
+          <HodDashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="/hod/summary" element={
+        <ProtectedRoute allowedRole="hod">
+          <AttendanceSummary />
         </ProtectedRoute>
       } />
 

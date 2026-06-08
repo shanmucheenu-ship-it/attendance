@@ -1,13 +1,14 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { PageWrapper } from '../../components/layout/PageWrapper';
 import { AppContext } from '../../context/AppContext';
 import { StatCard } from '../../components/shared/StatCard';
-import { Users, TrendingUp, UserX, UserCheck, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
+import { Users, TrendingUp, UserX, UserCheck, CheckCircle2, XCircle, AlertCircle, Edit2 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { BarChart } from '../../components/charts/BarChart';
 
 const HodOverview = () => {
   const { auth, students, attendance, clearSubmissions, showToast, approveSubmission, rejectSubmission, sendAlert } = useContext(AppContext);
+  const [editingCounts, setEditingCounts] = useState({});
   const deptStudents = students.filter(s => s.department === auth.user.department);
   const totalStudents = deptStudents.length;
 
@@ -158,32 +159,50 @@ const HodOverview = () => {
                     <tr>
                       <th className="px-4 py-2.5">Date</th>
                       <th className="px-4 py-2.5">Class</th>
-                      <th className="px-4 py-2.5 text-center">Absentees</th>
+                      <th className="px-4 py-2.5 text-center">Edit Count</th>
                       <th className="px-4 py-2.5 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {pendingSubmissions.map(sub => (
-                      <tr key={sub.id} className="hover:bg-slate-50/50 transition-colors">
-                        <td className="px-4 py-3 font-semibold text-slate-700">{sub.date}</td>
-                        <td className="px-4 py-3 text-slate-600">{sub.year} - Section {sub.section}</td>
-                        <td className="px-4 py-3 text-center font-bold text-red-600 text-base">{sub.absenteesCount}</td>
-                        <td className="px-4 py-3 text-right space-x-2">
-                          <button 
-                            onClick={() => { approveSubmission(sub.id); showToast('Attendance request approved!'); }}
-                            className="bg-green-600 hover:bg-green-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors shadow-sm"
-                          >
-                            Approve
-                          </button>
-                          <button 
-                            onClick={() => { rejectSubmission(sub.id); showToast('Attendance request rejected!', 'error'); }}
-                            className="bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors border border-red-200"
-                          >
-                            Reject
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                    {pendingSubmissions.map(sub => {
+                      const currentVal = editingCounts[sub.id] !== undefined ? editingCounts[sub.id] : sub.absenteesCount;
+                      return (
+                        <tr key={sub.id} className="hover:bg-slate-50/50 transition-colors">
+                          <td className="px-4 py-3 font-semibold text-slate-700">{sub.date}</td>
+                          <td className="px-4 py-3 text-slate-600">{sub.year} - Section {sub.section}</td>
+                          <td className="px-4 py-3 text-center">
+                            <div className="inline-flex items-center gap-1.5 bg-amber-50/40 hover:bg-amber-50 border border-amber-200 rounded-lg px-2 py-1 transition-all shadow-sm">
+                              <Edit2 className="w-3.5 h-3.5 text-amber-600" />
+                              <input
+                                type="number"
+                                value={currentVal}
+                                onChange={(e) => setEditingCounts({ ...editingCounts, [sub.id]: Math.max(0, parseInt(e.target.value) || 0) })}
+                                className="w-14 text-center font-bold text-red-600 focus:outline-none bg-transparent"
+                                min="0"
+                              />
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 text-right space-x-2">
+                            <button 
+                              onClick={async () => { 
+                                await approveSubmission(sub.id, currentVal); 
+                              }}
+                              className="bg-green-600 hover:bg-green-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors shadow-sm cursor-pointer"
+                            >
+                              Approve & Upload
+                            </button>
+                            <button 
+                              onClick={async () => { 
+                                await rejectSubmission(sub.id); 
+                              }}
+                              className="bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold px-3 py-1.5 rounded-lg transition-colors border border-red-200 cursor-pointer"
+                            >
+                              Reject
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

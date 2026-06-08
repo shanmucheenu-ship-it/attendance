@@ -79,8 +79,44 @@ export const AppProvider = ({ children }) => {
     // Subscribe to attendance_sessions changes for realtime updates
     const attendanceSub = supabase.channel('public:attendance_sessions')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'attendance_sessions' }, payload => {
-        // Refetch everything to keep state totally in sync (lazy approach, but effective)
-        fetchInitialData();
+        const { eventType, new: newRow, old: oldRow } = payload;
+        setAttendance(prev => {
+          let updatedSessions = [...prev.submittedSessions];
+          
+          if (eventType === 'INSERT' && newRow) {
+            const mappedNew = {
+              id: newRow.id,
+              date: newRow.date,
+              department: newRow.department,
+              year: newRow.year,
+              section: newRow.section,
+              absenteesCount: Number(newRow.absentees_count),
+              status: newRow.status === 'Pending Approval' ? 'Pending' : newRow.status,
+              forwardedToAdmin: newRow.forwarded_to_admin
+            };
+            if (!updatedSessions.some(s => s.id === mappedNew.id)) {
+              updatedSessions.push(mappedNew);
+            }
+          } else if (eventType === 'UPDATE' && newRow) {
+            updatedSessions = updatedSessions.map(s => s.id === newRow.id ? {
+              id: newRow.id,
+              date: newRow.date,
+              department: newRow.department,
+              year: newRow.year,
+              section: newRow.section,
+              absenteesCount: Number(newRow.absentees_count),
+              status: newRow.status === 'Pending Approval' ? 'Pending' : newRow.status,
+              forwardedToAdmin: newRow.forwarded_to_admin
+            } : s);
+          } else if (eventType === 'DELETE' && oldRow) {
+            updatedSessions = updatedSessions.filter(s => s.id !== oldRow.id);
+          }
+          
+          return {
+            ...prev,
+            submittedSessions: updatedSessions
+          };
+        });
       })
       .subscribe();
 
@@ -254,64 +290,89 @@ export const AppProvider = ({ children }) => {
           submittedSessions: [...filtered, newSession]
         };
       });
-      showToast("Attendance saved successfully", 'success');
+      showToast(role === 'faculty' ? "Attendance submitted to HOD successfully!" : "Attendance approved & uploaded successfully!", 'success');
     }
   };
 
-  const approveSubmission = async (id) => {
-    const { error } = await supabase.from('attendance_sessions').update({ status: 'Approved', forwarded_to_admin: true }).eq('id', id);
-    if (error) {
-      console.error("Supabase approveSubmission error:", error);
-      showToast('Error approving submission: ' + error.message, 'error');
-    } else {
-      setAttendance(prev => ({
-        ...prev,
-        submittedSessions: prev.submittedSessions.map(s => s.id === id ? { ...s, status: 'Approved', forwardedToAdmin: true } : s)
-      }));
-      showToast('Submission approved successfully', 'success');
+  const approveSubmission = async (id, newAbsenteesCount) => {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    if (isUuid) {
+      const updatePayload = { status: 'Approved', forwarded_to_admin: true };
+      if (newAbsenteesCount !== undefined && newAbsenteesCount !== null) {
+        updatePayload.absentees_count = Number(newAbsenteesCount);
+      }
+      const { error } = await supabase.from('attendance_sessions').update(updatePayload).eq('id', id);
+      if (error) {
+        console.error("Supabase approveSubmission error:", error);
+        showToast('Error approving submission: ' + error.message, 'error');
+        return false;
+      }
     }
+    setAttendance(prev => ({
+      ...prev,
+      submittedSessions: prev.submittedSessions.map(s => s.id === id ? { 
+        ...s, 
+        status: 'Approved', 
+        forwardedToAdmin: true,
+        ...(newAbsenteesCount !== undefined && newAbsenteesCount !== null ? { absenteesCount: Number(newAbsenteesCount) } : {})
+      } : s)
+    }));
+    showToast('Attendance approved & sent to Principal successfully!', 'success');
+    return true;
   };
 
   const rejectSubmission = async (id) => {
-    const { error } = await supabase.from('attendance_sessions').update({ status: 'Rejected' }).eq('id', id);
-    if (error) {
-      console.error("Supabase rejectSubmission error:", error);
-      showToast('Error rejecting submission: ' + error.message, 'error');
-    } else {
-      setAttendance(prev => ({
-        ...prev,
-        submittedSessions: prev.submittedSessions.map(s => s.id === id ? { ...s, status: 'Rejected' } : s)
-      }));
-      showToast('Submission rejected successfully', 'success');
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    if (isUuid) {
+      const { error } = await supabase.from('attendance_sessions').update({ status: 'Rejected' }).eq('id', id);
+      if (error) {
+        console.error("Supabase rejectSubmission error:", error);
+        showToast('Error rejecting submission: ' + error.message, 'error');
+        return false;
+      }
     }
+    setAttendance(prev => ({
+      ...prev,
+      submittedSessions: prev.submittedSessions.map(s => s.id === id ? { ...s, status: 'Rejected' } : s)
+    }));
+    showToast('Attendance request rejected successfully', 'success');
+    return true;
   };
 
   const forwardSubmission = async (id) => {
-    const { error } = await supabase.from('attendance_sessions').update({ forwarded_to_admin: true }).eq('id', id);
-    if (error) {
-      console.error("Supabase forwardSubmission error:", error);
-      showToast('Error forwarding submission: ' + error.message, 'error');
-    } else {
-      setAttendance(prev => ({
-        ...prev,
-        submittedSessions: prev.submittedSessions.map(s => s.id === id ? { ...s, forwardedToAdmin: true } : s)
-      }));
-      showToast('Submission forwarded successfully', 'success');
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    if (isUuid) {
+      const { error } = await supabase.from('attendance_sessions').update({ forwarded_to_admin: true }).eq('id', id);
+      if (error) {
+        console.error("Supabase forwardSubmission error:", error);
+        showToast('Error forwarding submission: ' + error.message, 'error');
+        return false;
+      }
     }
+    setAttendance(prev => ({
+      ...prev,
+      submittedSessions: prev.submittedSessions.map(s => s.id === id ? { ...s, forwardedToAdmin: true } : s)
+    }));
+    showToast('Submission forwarded successfully', 'success');
+    return true;
   };
 
   const deleteSubmission = async (id) => {
-    const { error } = await supabase.from('attendance_sessions').delete().eq('id', id);
-    if (error) {
-      console.error("Supabase deleteSubmission error:", error);
-      showToast('Error deleting submission: ' + error.message, 'error');
-    } else {
-      setAttendance(prev => ({
-        ...prev,
-        submittedSessions: prev.submittedSessions.filter(s => s.id !== id)
-      }));
-      showToast('Submission deleted successfully', 'success');
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    if (isUuid) {
+      const { error } = await supabase.from('attendance_sessions').delete().eq('id', id);
+      if (error) {
+        console.error("Supabase deleteSubmission error:", error);
+        showToast('Error deleting submission: ' + error.message, 'error');
+        return false;
+      }
     }
+    setAttendance(prev => ({
+      ...prev,
+      submittedSessions: prev.submittedSessions.filter(s => s.id !== id)
+    }));
+    showToast('Submission deleted successfully', 'success');
+    return true;
   };
 
   const clearSubmissions = async (department) => {

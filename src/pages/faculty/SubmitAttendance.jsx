@@ -20,16 +20,17 @@ const SubmitAttendance = () => {
     'Communication and Computer Networking',
   ];
   const years = ['2nd Year', '3rd Year'];
+  const [selectedDept, setSelectedDept] = useState(auth.user?.department || departments[0]);
+  const [selectedYear, setSelectedYear] = useState('');
+
   const isComputer = auth.user?.department === 'Computer' || selectedDept === 'Computer';
   const sections = isComputer ? ['A', 'B'] : ['Single'];
 
-  const [selectedDept, setSelectedDept] = useState(auth.user?.department || departments[0]);
-  const [selectedYear, setSelectedYear] = useState('');
-  const [selectedSection, setSelectedSection] = useState(!isComputer ? 'Single' : '');
+  const [selectedSection, setSelectedSection] = useState(isComputer ? '' : 'Single');
   const [absenteesCount, setAbsenteesCount] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!selectedDept || !selectedYear || !selectedSection || absenteesCount === '') {
@@ -52,8 +53,7 @@ const SubmitAttendance = () => {
       submittedBy: auth.user?.username || 'faculty',
     };
 
-    submitAttendance(sessionData, 'faculty');
-    showToast('Attendance submitted to HOD successfully!', 'success');
+    await submitAttendance(sessionData, 'faculty');
 
     // Reset input fields
     setAbsenteesCount('');
@@ -96,7 +96,11 @@ const SubmitAttendance = () => {
                 <label className="block text-sm font-semibold text-slate-700 mb-1.5">Department</label>
                 <Select 
                   value={selectedDept} 
-                  onChange={e => setSelectedDept(e.target.value)}
+                  onChange={e => {
+                    const dept = e.target.value;
+                    setSelectedDept(dept);
+                    setSelectedSection(dept === 'Computer' ? '' : 'Single');
+                  }}
                   className="w-full focus:ring-2 focus:ring-indigo-300"
                 >
                   {departments.map(d => (
@@ -206,10 +210,9 @@ const SubmitAttendance = () => {
                         <td className="px-4 py-3 text-center">
                           {item.status === 'Pending' ? (
                             <button
-                              onClick={() => {
+                              onClick={async () => {
                                 if (window.confirm('Are you sure you want to delete this pending request?')) {
-                                  deleteSubmission(item.id);
-                                  showToast('Request deleted successfully', 'success');
+                                  await deleteSubmission(item.id);
                                 }
                               }}
                               className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 rounded-lg transition-colors inline-flex items-center justify-center"
