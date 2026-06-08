@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { GraduationCap, LayoutDashboard, UserCog, ShieldCheck } from 'lucide-react';
 import { StarsBackground } from '../components/ui/StarsBackground';
 import { supabase } from '../lib/supabase';
+import SplitText from '../components/ui/SplitText';
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -139,9 +140,20 @@ const Landing = () => {
             <img src="https://srptc.ac.in/wp-content/uploads/2021/04/Polytechnic-1.png" alt="Logo" className="h-20 object-contain" />
           </div>
         </div>
-        <h1 className="text-4xl md:text-5xl font-extrabold text-slate-800 tracking-tight mb-3">
-          Sri Ramakrishna Polytechnic College
-        </h1>
+        <SplitText
+          text="Sri Ramakrishna Polytechnic College"
+          className="text-4xl md:text-5xl font-extrabold text-slate-800 tracking-tight mb-3"
+          delay={40}
+          duration={1.5}
+          ease="power3.out"
+          splitType="chars"
+          from={{ opacity: 0, y: 40 }}
+          to={{ opacity: 1, y: 0 }}
+          threshold={0.1}
+          rootMargin="-100px"
+          textAlign="center"
+          tag="h1"
+        />
         <p className="text-slate-500 text-lg md:text-xl font-medium max-w-2xl mx-auto">
           Select your portal to securely access the Attendance Management System.
         </p>

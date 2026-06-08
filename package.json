@@ -10,6 +10,7 @@
     "start": "node server/server.cjs"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.2",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.107.0",
     "@tailwindcss/vite": "^4.3.0",
@@ -19,6 +20,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "framer-motion": "^12.40.0",
+    "gsap": "^3.15.0",
     "lucide-react": "^1.16.0",
     "postcss": "^8.5.15",
     "react": "^19.2.6",
