@@ -357,6 +357,30 @@ export const AppProvider = ({ children }) => {
     return true;
   };
 
+  const updateSubmissionCount = async (id, newAbsenteesCount) => {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    if (isUuid) {
+      const { error } = await supabase
+        .from('attendance_sessions')
+        .update({ absentees_count: Number(newAbsenteesCount) })
+        .eq('id', id);
+      if (error) {
+        console.error("Supabase updateSubmissionCount error:", error);
+        showToast('Error updating attendance: ' + error.message, 'error');
+        return false;
+      }
+    }
+    setAttendance(prev => ({
+      ...prev,
+      submittedSessions: prev.submittedSessions.map(s => s.id === id ? { 
+        ...s, 
+        absenteesCount: Number(newAbsenteesCount)
+      } : s)
+    }));
+    showToast('Attendance updated successfully', 'success');
+    return true;
+  };
+
   const deleteSubmission = async (id) => {
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
     if (isUuid) {
@@ -397,7 +421,7 @@ export const AppProvider = ({ children }) => {
       users, addUser, updateUser, deleteUser,
       students, addStudent, updateStudent, deleteStudent,
       attendance, saveCurrentSession, submitAttendance, getSessionStudents, clearSubmissions,
-      approveSubmission, rejectSubmission, forwardSubmission, deleteSubmission,
+      approveSubmission, rejectSubmission, forwardSubmission, deleteSubmission, updateSubmissionCount,
       toast, showToast,
       showViewDataModal, setShowViewDataModal,
       alerts, sendAlert, markAlertAsRead
