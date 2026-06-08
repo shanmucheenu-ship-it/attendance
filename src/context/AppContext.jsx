@@ -358,15 +358,22 @@ export const AppProvider = ({ children }) => {
   };
 
   const deleteSubmission = async (id) => {
+    console.log("[deleteSubmission] Initiating deletion for ID:", id);
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    console.log("[deleteSubmission] isUuid test:", isUuid);
+    
     if (isUuid) {
       const { error } = await supabase.from('attendance_sessions').delete().eq('id', id);
       if (error) {
-        console.error("Supabase deleteSubmission error:", error);
+        console.error("[deleteSubmission] Supabase deleteSubmission error:", error);
         showToast('Error deleting submission: ' + error.message, 'error');
         return false;
       }
+      console.log("[deleteSubmission] Successfully deleted from Supabase database.");
+    } else {
+      console.warn("[deleteSubmission] ID is not a valid UUID; skipping Supabase deletion. Local filter will still be applied.");
     }
+    
     setAttendance(prev => ({
       ...prev,
       submittedSessions: prev.submittedSessions.filter(s => s.id !== id)

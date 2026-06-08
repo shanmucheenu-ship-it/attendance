@@ -29,6 +29,7 @@ const SubmitAttendance = () => {
   const [selectedSection, setSelectedSection] = useState(isComputer ? '' : 'Single');
   const [absenteesCount, setAbsenteesCount] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [deleteConfirmSession, setDeleteConfirmSession] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -210,11 +211,7 @@ const SubmitAttendance = () => {
                         <td className="px-4 py-3 text-center">
                           {item.status === 'Pending' ? (
                             <button
-                              onClick={async () => {
-                                if (window.confirm('Are you sure you want to delete this pending request?')) {
-                                  await deleteSubmission(item.id);
-                                }
-                              }}
+                              onClick={() => setDeleteConfirmSession(item)}
                               className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 rounded-lg transition-colors inline-flex items-center justify-center"
                               title="Delete Submission"
                             >
@@ -234,6 +231,43 @@ const SubmitAttendance = () => {
         </Card>
 
       </div>
+
+      {/* Custom Confirmation Modal */}
+      {deleteConfirmSession && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-all duration-300 animate-in fade-in">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-100 transform transition-all scale-100 duration-300 animate-in zoom-in-95">
+            <div className="flex items-center gap-3 text-red-600 mb-4">
+              <div className="bg-red-50 p-2 rounded-full">
+                <Trash2 className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-800">Confirm Deletion</h3>
+            </div>
+            
+            <p className="text-slate-600 text-sm mb-6 leading-relaxed">
+              Are you sure you want to delete the pending attendance submission for <span className="font-semibold text-slate-800">{deleteConfirmSession.year} - Section {deleteConfirmSession.section}</span>? This action cannot be undone.
+            </p>
+            
+            <div className="flex items-center justify-end gap-3">
+              <button
+                onClick={() => setDeleteConfirmSession(null)}
+                className="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 border border-slate-200 rounded-xl transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  const idToDelete = deleteConfirmSession.id;
+                  setDeleteConfirmSession(null);
+                  await deleteSubmission(idToDelete);
+                }}
+                className="px-5 py-2 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-xl transition-colors shadow-sm"
+              >
+                Delete Request
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </PageWrapper>
   );
 };
