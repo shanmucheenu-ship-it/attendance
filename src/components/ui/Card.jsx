@@ -2,17 +2,31 @@ import React from 'react';
 import { cn } from './Button';
 import { motion } from 'framer-motion';
 
-export const Card = React.forwardRef(({ className, disableHover = false, ...props }, ref) => (
+import BorderGlow from './BorderGlow';
+
+export const Card = React.forwardRef(({ className, disableHover = false, children, ...props }, ref) => (
   <motion.div
     ref={ref}
     whileHover={!disableHover ? { y: -4, boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.05), 0 8px 10px -6px rgb(0 0 0 / 0.01)" } : {}}
     transition={{ duration: 0.3, ease: "easeOut" }}
     className={cn(
-      "rounded-2xl border border-slate-200/60 bg-white/95 backdrop-blur-md text-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.04)]",
+      "rounded-2xl text-slate-800",
       className
     )}
     {...props}
-  />
+  >
+    <BorderGlow
+      backgroundColor="rgba(255, 255, 255, 0.93)"
+      borderRadius={16}
+      glowColor="220 80 60"
+      glowIntensity={0.5}
+      fillOpacity={0.1}
+      className="w-full h-full"
+      style={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
+    >
+      {children}
+    </BorderGlow>
+  </motion.div>
 ));
 Card.displayName = "Card";
 
