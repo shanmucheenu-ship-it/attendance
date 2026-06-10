@@ -243,14 +243,86 @@ const AdminDashboard = () => {
   });
 
   const handleExportCSV = () => {
-    const data = deptStats.map(d => ({
-      department: d.name,
-      total: d.total,
-      present: d.present,
-      absent: d.absent,
-      percentage: `${d.total > 0 ? Math.round((d.present/d.total)*100) : 100}%`
-    }));
-    downloadCSV(data, 'system_absentee_report.csv');
+    const headers = [
+      "S.No",
+      "Department",
+      "1st Year",
+      "2nd Year",
+      "3rd Year",
+      "Total Absentees",
+      "Approved Records"
+    ];
+
+    const getCsvDeptName = (deptName) => {
+      if (deptName === 'Computer') return 'Computer Science';
+      if (deptName === 'Electronics and Communication') return 'Electronics & Communication';
+      if (deptName === 'Electrical and Electronic') return 'Electrical & Electronics';
+      if (deptName === 'Communication and Computer Networking') return 'Communication & Computer Networking';
+      return deptName;
+    };
+
+    const getCsvSubAbsentTotal = (deptName, year) => {
+      let sum = 0;
+      let hasData = false;
+      const sections = deptName === 'Computer' ? ['A', 'B'] : ['Single'];
+      sections.forEach(sec => {
+        const val = getSubAbsent(deptName, year, sec);
+        if (typeof val === 'number') {
+          sum += val;
+          hasData = true;
+        }
+      });
+      return hasData ? sum : 0;
+    };
+
+    const getApprovedRecordsCount = (deptName) => {
+      return forwardedSubmissions.filter(s => s.department === deptName).length;
+    };
+
+    let sNo = 1;
+    let total1st = 0;
+    let total2nd = 0;
+    let total3rd = 0;
+    let totalAbs = 0;
+    let totalApp = 0;
+
+    const rows = depts.map(d => {
+      const displayDept = getCsvDeptName(d);
+      const val1st = getCsvSubAbsentTotal(d, '1st Year');
+      const val2nd = getCsvSubAbsentTotal(d, '2nd Year');
+      const val3rd = getCsvSubAbsentTotal(d, '3rd Year');
+      const rowTotal = val1st + val2nd + val3rd;
+      const approvedCount = getApprovedRecordsCount(d);
+
+      total1st += val1st;
+      total2nd += val2nd;
+      total3rd += val3rd;
+      totalAbs += rowTotal;
+      totalApp += approvedCount;
+
+      return [
+        sNo++,
+        displayDept,
+        val1st,
+        val2nd,
+        val3rd,
+        rowTotal,
+        approvedCount
+      ];
+    });
+
+    // Add Grand Total row
+    rows.push([
+      "",
+      "Grand Total",
+      total1st,
+      total2nd,
+      total3rd,
+      totalAbs,
+      totalApp
+    ]);
+
+    downloadCSV(headers, rows, 'system_absentee_report.csv');
   };
 
   // Filter approved records for selected modal date
