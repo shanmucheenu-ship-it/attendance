@@ -11,7 +11,6 @@ const SplitText = ({
   delay = 50,
   duration = 1.25,
   ease = 'power3.out',
-  splitType = 'chars', // Fallback/compatibility
   from = { opacity: 0, y: 40 },
   to = { opacity: 1, y: 0 },
   threshold = 0.1,
@@ -23,7 +22,7 @@ const SplitText = ({
   const ref = useRef(null);
   const animationCompletedRef = useRef(false);
   const onCompleteRef = useRef(onLetterAnimationComplete);
-  const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [fontsLoaded, setFontsLoaded] = useState(() => document.fonts.status === 'loaded');
 
   // Keep callback ref updated
   useEffect(() => {
@@ -31,12 +30,16 @@ const SplitText = ({
   }, [onLetterAnimationComplete]);
 
   useEffect(() => {
-    if (document.fonts.status === 'loaded') {
-      setFontsLoaded(true);
-    } else {
+    if (document.fonts.status !== 'loaded') {
+      let active = true;
       document.fonts.ready.then(() => {
-        setFontsLoaded(true);
+        if (active) {
+          setFontsLoaded(true);
+        }
       });
+      return () => {
+        active = false;
+      };
     }
   }, []);
 

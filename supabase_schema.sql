@@ -84,3 +84,27 @@ CREATE POLICY "Allow anonymous delete access on attendance_sessions" ON attendan
 
 -- Enable Realtime for attendance_sessions
 alter publication supabase_realtime add table attendance_sessions;
+
+-- 5. Student Requests Table
+CREATE TABLE student_requests (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    request_type TEXT NOT NULL,
+    name TEXT NOT NULL,
+    reg_no TEXT NOT NULL,
+    gender TEXT NOT NULL,
+    year TEXT NOT NULL,
+    section TEXT NOT NULL,
+    department TEXT NOT NULL,
+    reason TEXT DEFAULT '',
+    status TEXT NOT NULL DEFAULT 'Pending',
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE student_requests ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow anonymous read access on student_requests" ON student_requests FOR SELECT USING (true);
+CREATE POLICY "Allow anonymous insert access on student_requests" ON student_requests FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow anonymous update access on student_requests" ON student_requests FOR UPDATE USING (true);
+CREATE POLICY "Allow anonymous delete access on student_requests" ON student_requests FOR DELETE USING (true);
+
+alter publication supabase_realtime add table student_requests;

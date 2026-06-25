@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { PageWrapper } from '../../components/layout/PageWrapper';
 import { FilterBar } from '../../components/shared/FilterBar';
+import { AppContext } from '../../context/AppContext';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { BarChart } from '../../components/charts/BarChart';
 import { LineChart } from '../../components/charts/LineChart';
@@ -10,7 +11,7 @@ const OverallRecords = () => {
   const { students } = useContext(AppContext);
   const [filters, setFilters] = useState({
     department: { type: 'select', value: 'All', options: ['All', 'Mechanical', 'Automobile', 'Civil', 'Electrical and Electronic', 'Electronics and Communication', 'Computer', 'Communication and Computer Networking'] },
-    year: { type: 'select', value: 'All', options: ['All', '2nd Year', '3rd Year'] },
+    year: { type: 'select', value: 'All', options: ['All', '1st Year', '2nd Year', '3rd Year'] },
     section: { type: 'select', value: 'All', options: ['All', 'A', 'B', 'Single'] },
     gender: { type: 'select', value: 'All', options: ['All', 'Boys', 'Girls'] },
     startDate: { type: 'date', value: '' },
@@ -73,7 +74,7 @@ const OverallRecords = () => {
   }
 
   // 2. Calculate dynamic Year Pie Chart Data
-  const years = ['2nd Year', '3rd Year'];
+  const years = ['1st Year', '2nd Year', '3rd Year'];
   let yearPieData = [];
   years.forEach(yr => {
     const yrStus = filteredStudents.filter(s => s.year === yr);

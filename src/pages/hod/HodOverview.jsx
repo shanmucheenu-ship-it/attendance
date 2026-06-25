@@ -25,7 +25,7 @@ const HodOverview = () => {
   const approvedToday = deptSubmissions.filter(s => s.status === 'Approved' && s.date === today);
 
   // Missing submissions today
-  const yearsList = ['2nd Year', '3rd Year'];
+  const yearsList = ['1st Year', '2nd Year', '3rd Year'];
   const sectionsList = auth.user.department === 'Computer' ? ['A', 'B'] : ['Single'];
 
   const missingSubmissions = [];
@@ -77,6 +77,7 @@ const HodOverview = () => {
   };
 
   const chartData = [
+    { name: '1st Year', 'Attendance %': getYearPercent('1st Year') },
     { name: '2nd Year', 'Attendance %': getYearPercent('2nd Year') },
     { name: '3rd Year', 'Attendance %': getYearPercent('3rd Year') }
   ];

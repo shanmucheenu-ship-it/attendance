@@ -23,19 +23,31 @@ app.use('/api/attendance', require('./routes/attendance.cjs'));
 // Health check and connection verification endpoint
 app.get('/api/health', async (req, res) => {
   try {
-    // Perform a quick verification check with Supabase
-    const { error } = await supabase
-      .from('attendance_sessions')
-      .select('*')
-      .limit(1);
+    // Perform verification checks for all database tables
+    const [usersRes, studentsRes, attendanceRes, requestsRes] = await Promise.all([
+      supabase.from('users').select('id').limit(1),
+      supabase.from('students').select('id').limit(1),
+      supabase.from('attendance_sessions').select('id').limit(1),
+      supabase.from('student_requests').select('id').limit(1)
+    ]);
 
-    const dbConnected = !error || error.code === 'PGRST205'; // PGRST205 is schema cache missing but authenticated
+    const usersExists = !usersRes.error || usersRes.error.code !== 'PGRST205';
+    const studentsExists = !studentsRes.error || studentsRes.error.code !== 'PGRST205';
+    const attendanceExists = !attendanceRes.error || attendanceRes.error.code !== 'PGRST205';
+    const studentRequestsExists = !requestsRes.error || requestsRes.error.code !== 'PGRST205';
+
+    const dbConnected = usersExists && studentsExists && attendanceExists;
 
     res.json({
       status: 'ok',
       message: 'Express backend server running',
       database: dbConnected ? 'Connected' : 'Not Connected',
-      dbError: error ? error.message : null
+      tables: {
+        users: usersExists,
+        students: studentsExists,
+        attendance_sessions: attendanceExists,
+        student_requests: studentRequestsExists
+      }
     });
   } catch (err) {
     res.status(500).json({ status: 'error', message: err.message });

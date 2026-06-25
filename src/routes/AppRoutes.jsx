@@ -14,6 +14,8 @@ import AdminDashboard from '../pages/admin/AdminDashboard';
 import HodOverview from '../pages/hod/HodOverview';
 import HodDashboard from '../pages/hod/HodDashboard';
 import AttendanceSummary from '../pages/hod/AttendanceSummary';
+import DetailedAttendanceReview from '../pages/hod/DetailedAttendanceReview';
+import HodManageStudents from '../pages/hod/ManageStudents';
 
 // Super Admin & Faculty placeholders (we will create these)
 import SuperAdminDashboard from '../pages/superadmin/SuperAdminDashboard';
@@ -21,6 +23,7 @@ import ManageUsers from '../pages/superadmin/ManageUsers';
 import SuperAdminManageStudents from '../pages/superadmin/ManageStudents';
 import ManageStudents from '../pages/faculty/ManageStudents';
 import FacultySubmitAttendance from '../pages/faculty/SubmitAttendance';
+import DetailedAttendance from '../pages/faculty/DetailedAttendance';
 
 const ProtectedRoute = ({ children, allowedRole }) => {
   const { auth } = useContext(AppContext);
@@ -78,6 +81,16 @@ const AppRoutes = () => {
           <AttendanceSummary />
         </ProtectedRoute>
       } />
+      <Route path="/hod/detailed-review" element={
+        <ProtectedRoute allowedRole="hod">
+          <DetailedAttendanceReview />
+        </ProtectedRoute>
+      } />
+      <Route path="/hod/students" element={
+        <ProtectedRoute allowedRole="hod">
+          <HodManageStudents />
+        </ProtectedRoute>
+      } />
 
       {/* Faculty Routes */}
       <Route path="/faculty/submit" element={
@@ -91,6 +104,11 @@ const AppRoutes = () => {
       <Route path="/faculty/students" element={
         <ProtectedRoute allowedRole="faculty">
           <ManageStudents />
+        </ProtectedRoute>
+      } />
+      <Route path="/faculty/detailed-submit" element={
+        <ProtectedRoute allowedRole="faculty">
+          <DetailedAttendance />
         </ProtectedRoute>
       } />
       

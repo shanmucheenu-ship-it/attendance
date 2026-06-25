@@ -31,7 +31,10 @@ const Login = () => {
     setError('');
     
     // Enforce role matching as well to prevent faculty from logging into HOD portal
-    const user = users.find(u => u.username === username && u.password === password && u.role === selectedRole);
+    const trimmedUsername = username.trim();
+    const trimmedPassword = password.trim();
+    
+    const user = users.find(u => u.username === trimmedUsername && u.password === trimmedPassword && u.role === selectedRole);
     
     if (user) {
       login(user.role, user);
@@ -143,6 +146,7 @@ const Login = () => {
             Login
           </Button>
         </form>
+
 
 
       </motion.div>

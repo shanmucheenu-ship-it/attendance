@@ -14,7 +14,7 @@ const HodDashboard = () => {
   const initialSection = isComputer ? 'A' : 'Single';
 
   const [filters, setFilters] = useState({
-    year: { type: 'select', value: '2nd Year', options: ['All', '2nd Year', '3rd Year'] },
+    year: { type: 'select', value: '1st Year', options: ['All', '1st Year', '2nd Year', '3rd Year'] },
     section: { type: 'select', value: initialSection, options: isComputer ? ['All', 'A', 'B'] : ['Single'] },
     gender: { type: 'select', value: 'All', options: ['All', 'Male', 'Female'] },
     date: { type: 'date', value: new Date().toISOString().split('T')[0] },

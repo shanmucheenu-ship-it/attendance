@@ -19,7 +19,7 @@ const SubmitAttendance = () => {
     'Computer',
     'Communication and Computer Networking',
   ];
-  const years = ['2nd Year', '3rd Year'];
+  const years = ['1st Year', '2nd Year', '3rd Year'];
   const [selectedDept, setSelectedDept] = useState(auth.user?.department || departments[0]);
   const [selectedYear, setSelectedYear] = useState('');
 

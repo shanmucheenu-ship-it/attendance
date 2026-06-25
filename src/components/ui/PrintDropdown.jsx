@@ -7,6 +7,8 @@ export const PrintDropdown = ({ onPrint }) => {
   const dropdownRef = useRef(null);
 
   const options = [
+    { year: '1st Year', section: 'A' },
+    { year: '1st Year', section: 'B' },
     { year: '2nd Year', section: 'A' },
     { year: '2nd Year', section: 'B' },
     { year: '3rd Year', section: 'A' },

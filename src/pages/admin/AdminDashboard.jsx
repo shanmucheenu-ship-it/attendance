@@ -10,13 +10,15 @@ import AttendanceHistory from './AttendanceHistory';
 
 const AdminDashboard = () => {
   const { students, attendance, showViewDataModal, setShowViewDataModal, sendAlert, showToast } = useContext(AppContext);
-  const [selectedDeptDetails, setSelectedDeptDetails] = useState(null);
-  const [activeTab, setActiveTab] = useState('2nd Year');
-  const [printData, setPrintData] = useState(null);
-  const [modalDate, setModalDate] = useState(new Date().toISOString().split('T')[0]);
-  const [historyView, setHistoryView] = useState(null);
+  const getLocalDateString = (d = new Date()) => {
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  };
+  const today = getLocalDateString();
 
-  const today = new Date().toISOString().split('T')[0];
+  const [selectedDeptDetails, setSelectedDeptDetails] = useState(null);
+  const [activeTab, setActiveTab] = useState('1st Year');
+  const [modalDate, setModalDate] = useState(today);
+  const [historyView, setHistoryView] = useState(null);
 
   // Get today's approved submissions
   const forwardedSubmissions = attendance.submittedSessions.filter(
@@ -32,49 +34,13 @@ const AdminDashboard = () => {
     return sub ? Number(sub.absenteesCount) : '-';
   };
 
-  const handlePrint = (dept, year, section) => {
-    const dStudents = students.filter(s => s.department === dept);
-    const deptSubs = attendance.submittedSessions.filter(
-      s => s.status === 'Approved' && s.date === today && s.department === dept
-    );
-    
-    let rows = [];
-    const years = ['2nd Year', '3rd Year'];
-    const sections = dept === 'Computer' ? ['A', 'B'] : ['Single'];
-    
-    if (year === 'All' && section === 'All') {
-      years.forEach(y => {
-        sections.forEach(sec => {
-          const total = dStudents.filter(s => s.year === y && s.section === sec).length;
-          const sub = deptSubs.find(s => s.year === y && s.section === sec);
-          const absent = sub ? Number(sub.absenteesCount) : 0;
-          const percent = total > 0 ? Math.round(((total - absent) / total) * 100) : 100;
-          rows.push({ class: `${y} - Section ${sec}`, total, absent, percent });
-        });
-      });
-    } else {
-      const total = dStudents.filter(s => s.year === year && s.section === section).length;
-      const sub = deptSubs.find(s => s.year === year && s.section === section);
-      const absent = sub ? Number(sub.absenteesCount) : 0;
-      const percent = total > 0 ? Math.round(((total - absent) / total) * 100) : 100;
-      rows.push({ class: `${year} - Section ${section}`, total, absent, percent });
-    }
-    
-    setPrintData({ dept, year, section, rows, date: new Date().toLocaleDateString() });
-    
-    setTimeout(() => {
-      window.print();
-    }, 200);
-  };
-
   const getDetailedStats = (dept) => {
     if (!dept) return null;
-    const dStudents = students.filter(s => s.department === dept);
     const deptSubs = forwardedSubmissions.filter(s => s.department === dept);
-    
-    const years = ['2nd Year', '3rd Year'];
+
+    const years = ['1st Year', '2nd Year', '3rd Year'];
     const sections = dept === 'Computer' ? ['A', 'B'] : ['Single'];
-    
+
     let stats = {};
     years.forEach(year => {
       stats[year] = [];
@@ -91,73 +57,27 @@ const AdminDashboard = () => {
   let totalStudents = 0;
   let totalAbsent = 0;
   let totalPresent = 0;
-  
-  const deptStats = depts.map(d => {
+
+  depts.forEach(d => {
     const dStudents = students.filter(s => s.department === d);
     const dTotal = dStudents.length;
-    
+
     // Find approved submissions for this department today
     const deptSubs = forwardedSubmissions.filter(s => s.department === d);
-    
+
     let dAbsent = 0;
     deptSubs.forEach(sub => {
       dAbsent += Number(sub.absenteesCount);
     });
-    
+
     const dPresent = Math.max(0, dTotal - dAbsent);
-    
+
     totalStudents += dTotal;
     totalAbsent += dAbsent;
     totalPresent += dPresent;
-    
-    return { name: d, total: dTotal, present: dPresent, absent: dAbsent };
   });
 
   const overallPercent = totalStudents > 0 ? Math.round((totalPresent / totalStudents) * 100) : 100;
-
-  const getColTotal = (year, section) => {
-    let sum = 0;
-    let hasData = false;
-    depts.forEach(d => {
-      const val = getSubAbsent(d, year, section);
-      if (typeof val === 'number') {
-        sum += val;
-        hasData = true;
-      }
-    });
-    return hasData ? sum : '-';
-  };
-
-  const getDeptTotal = (deptName) => {
-    let sum = 0;
-    let hasData = false;
-    const years = ['2nd Year', '3rd Year'];
-    const sections = deptName === 'Computer' ? ['A', 'B'] : ['Single'];
-    
-    years.forEach(y => {
-      sections.forEach(s => {
-        const val = getSubAbsent(deptName, y, s);
-        if (typeof val === 'number') {
-          sum += val;
-          hasData = true;
-        }
-      });
-    });
-    return hasData ? sum : '-';
-  };
-
-  const getGrandTotal = () => {
-    let sum = 0;
-    let hasData = false;
-    depts.forEach(d => {
-      const val = getDeptTotal(d);
-      if (typeof val === 'number') {
-        sum += val;
-        hasData = true;
-      }
-    });
-    return hasData ? sum : '-';
-  };
 
   // Analytics wave chart filters
   const [filterDept, setFilterDept] = useState('All');
@@ -168,28 +88,49 @@ const AdminDashboard = () => {
   const getDatesForWeek = () => {
     const current = new Date();
     const week = [];
-    const first = current.getDate() - current.getDay() + 1; // Monday
+    const day = current.getDay();
+    const mondayDiff = day === 0 ? -6 : 1 - day;
+    const monday = new Date(current.getTime());
+    monday.setDate(current.getDate() + mondayDiff);
+
     for (let i = 0; i < 6; i++) {
-      const next = new Date(current.getTime());
-      next.setDate(first + i);
-      week.push(next.toISOString().split('T')[0]);
+      const next = new Date(monday.getTime());
+      next.setDate(monday.getDate() + i);
+      week.push(getLocalDateString(next));
     }
     return week;
   };
 
-  let xLabels;
+  const allWeeklyLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const weekDates = getDatesForWeek();
+
+  // Dynamically filter labels and data up to today's date
+  let filteredXLabels = [];
   if (timeFilter === 'Weekly') {
-    xLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    allWeeklyLabels.forEach((label, index) => {
+      const dateStr = weekDates[index];
+      // Only include days up to today
+      if (dateStr <= today) {
+        filteredXLabels.push({ label, index, dateStr });
+      }
+    });
   } else {
-    xLabels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+    const todayDateObj = new Date();
+    const currentWeekIndex = Math.floor((todayDateObj.getDate() - 1) / 7);
+    const allMonthlyLabels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+    allMonthlyLabels.forEach((label, index) => {
+      // Only include weeks up to the current week of the month
+      if (index <= currentWeekIndex) {
+        filteredXLabels.push({ label, index });
+      }
+    });
   }
 
-  const waveData = xLabels.map((label, index) => {
-    let filteredSubs = [];
-    
+  const waveData = filteredXLabels.map((item) => {
+    let filteredSubs;
+
     if (timeFilter === 'Weekly') {
-      const weekDates = getDatesForWeek();
-      const dateStr = weekDates[index];
+      const dateStr = item.dateStr;
       filteredSubs = attendance.submittedSessions.filter(
         s => s.status === 'Approved' && s.date === dateStr
       );
@@ -203,7 +144,7 @@ const AdminDashboard = () => {
         if (sDate.getFullYear() !== year || sDate.getMonth() !== month) return false;
         const day = sDate.getDate();
         const weekIndex = Math.floor((day - 1) / 7);
-        return weekIndex === index;
+        return weekIndex === item.index;
       });
     }
 
@@ -212,7 +153,7 @@ const AdminDashboard = () => {
     }
     if (filterYearSec !== 'All') {
       const yearMatch = filterYearSec.slice(0, 8);
-      
+
       if (filterYearSec.endsWith('All')) {
         filteredSubs = filteredSubs.filter(s => s.year === yearMatch);
       } else {
@@ -232,12 +173,14 @@ const AdminDashboard = () => {
       totalStrength += size;
     });
 
-    const pct = totalStrength > 0 
+    // If attendance is not entered yet (totalStrength is 0), set it to null
+    // so that the line graph stops at the last entered day and does not extend with 100%
+    const pct = totalStrength > 0
       ? Math.max(0, Math.round(((totalStrength - dayAbsent) / totalStrength) * 100))
-      : 100;
+      : null;
 
     return {
-      label: label,
+      label: item.label,
       attendance: pct
     };
   });
@@ -332,9 +275,9 @@ const AdminDashboard = () => {
 
   if (historyView) {
     return (
-      <AttendanceHistory 
-        initialFilters={historyView} 
-        onBack={() => setHistoryView(null)} 
+      <AttendanceHistory
+        initialFilters={historyView}
+        onBack={() => setHistoryView(null)}
       />
     );
   }
@@ -360,7 +303,7 @@ const AdminDashboard = () => {
   const getRowTotal = (row) => {
     let sum = 0;
     let hasData = false;
-    const years = ['2nd Year', '3rd Year'];
+    const years = ['1st Year', '2nd Year', '3rd Year'];
     years.forEach(y => {
       const val = getSubAbsent(row.dept, y, row.section);
       if (typeof val === 'number') {
@@ -430,12 +373,12 @@ const AdminDashboard = () => {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <StatCard title="Total Enrolled" value={totalStudents} icon={Users} colorClass="bg-blue-100 text-blue-600" />
-        <StatCard title="Total Approved Absentees (Today)" value={totalAbsent} icon={UserX} colorClass="bg-red-100 text-red-600" />
+        <StatCard title="Total Absentees Today" value={totalAbsent} icon={UserX} colorClass="bg-red-100 text-red-600" />
         <StatCard title="Overall Attendance (Today)" value={`${overallPercent}%`} icon={PieChart} colorClass="bg-green-100 text-green-600" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        
+
         {/* Department Breakdown Table */}
         <Card className="lg:col-span-2 shadow-sm">
           <CardHeader>
@@ -447,6 +390,7 @@ const AdminDashboard = () => {
                 <thead className="bg-slate-50 text-slate-500 uppercase text-xs">
                   <tr className="border-b border-slate-100">
                     <th className="px-4 py-3.5 text-left align-middle border-r border-slate-100 font-bold">Department</th>
+                    <th className="px-4 py-3.5 text-center align-middle border-r border-slate-100 font-bold">1st Year</th>
                     <th className="px-4 py-3.5 text-center align-middle border-r border-slate-100 font-bold">2nd Year</th>
                     <th className="px-4 py-3.5 text-center align-middle border-r border-slate-100 font-bold">3rd Year</th>
                     <th className="px-4 py-3.5 text-center align-middle border-r border-slate-100 font-bold bg-slate-100/50">Total Absentees</th>
@@ -460,10 +404,13 @@ const AdminDashboard = () => {
                     const hasSubmittedToday = forwardedSubmissions.some(
                       s => s.department === row.dept && s.section === row.section
                     );
-                    
+
                     return (
                       <tr key={row.key} className={isEven ? 'bg-white hover:bg-slate-50/20' : 'bg-slate-50/30 hover:bg-slate-50/50'}>
                         <td className="px-4 py-3 font-bold text-slate-800 border-r border-slate-100">{row.display}</td>
+                        <td className="px-4 py-3 text-center border-r border-slate-100">
+                          {renderAbsentCell(row.dept, '1st Year', row.section)}
+                        </td>
                         <td className="px-4 py-3 text-center border-r border-slate-100">
                           {renderAbsentCell(row.dept, '2nd Year', row.section)}
                         </td>
@@ -474,7 +421,7 @@ const AdminDashboard = () => {
                           {rowTotal}
                         </td>
                         <td className="px-4 py-3 text-center flex items-center justify-center gap-2">
-                          <button 
+                          <button
                             onClick={() => { setHistoryView({ department: row.dept, year: 'All', section: row.section }); }}
                             className="text-xs font-semibold border border-indigo-200 text-indigo-700 bg-indigo-50/30 hover:bg-indigo-50 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 shadow-sm"
                           >
@@ -499,6 +446,9 @@ const AdminDashboard = () => {
                   <tr className="bg-slate-100/80 font-bold border-t-2 border-slate-200">
                     <td className="px-4 py-3 text-slate-800 border-r border-slate-100 font-extrabold">TOTAL</td>
                     <td className="px-4 py-3 text-center text-red-600 border-r border-slate-100 font-extrabold">
+                      {getColTotalForYear('1st Year')}
+                    </td>
+                    <td className="px-4 py-3 text-center text-red-600 border-r border-slate-100 font-extrabold">
                       {getColTotalForYear('2nd Year')}
                     </td>
                     <td className="px-4 py-3 text-center text-red-600 border-r border-slate-100 font-extrabold">
@@ -519,7 +469,7 @@ const AdminDashboard = () => {
         <Card className="shadow-sm">
           <CardHeader className="flex flex-col space-y-4">
             <div className="flex items-center space-x-2">
-              <select 
+              <select
                 className="text-lg font-bold bg-transparent outline-none cursor-pointer text-slate-800 hover:text-indigo-600 transition-colors border-none p-0 focus:ring-0"
                 value={timeFilter}
                 onChange={(e) => setTimeFilter(e.target.value)}
@@ -529,7 +479,7 @@ const AdminDashboard = () => {
               </select>
             </div>
             <div className="flex flex-col space-y-3">
-              <select 
+              <select
                 className="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 text-slate-700 font-medium outline-none cursor-pointer"
                 value={filterDept}
                 onChange={(e) => setFilterDept(e.target.value)}
@@ -539,15 +489,18 @@ const AdminDashboard = () => {
                   <option key={d} value={d}>{d}</option>
                 ))}
               </select>
-              
-              <select 
+
+              <select
                 className="w-full text-sm border border-slate-200 rounded-xl px-3 py-2 bg-slate-50 text-slate-700 font-medium outline-none cursor-pointer"
                 value={filterYearSec}
                 onChange={(e) => setFilterYearSec(e.target.value)}
               >
                 <option value="All">All Classes</option>
+                <option value="1st Year All">1st Year (All Sections)</option>
                 <option value="2nd Year All">2nd Year (All Sections)</option>
                 <option value="3rd Year All">3rd Year (All Sections)</option>
+                <option value="1st Year A">1st Year A (Computer)</option>
+                <option value="1st Year B">1st Year B (Computer)</option>
                 <option value="2nd Year A">2nd Year A (Computer)</option>
                 <option value="2nd Year B">2nd Year B (Computer)</option>
                 <option value="3rd Year A">3rd Year A (Computer)</option>
@@ -562,7 +515,7 @@ const AdminDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        
+
         {/* Approved Submissions List */}
         <Card className="lg:col-span-2 shadow-sm border-indigo-100">
           <CardHeader className="bg-indigo-50/20">
@@ -627,32 +580,31 @@ const AdminDashboard = () => {
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden relative animate-in fade-in zoom-in duration-200">
             <div className="p-6 pb-4 border-b border-slate-100 flex justify-between items-center">
               <h3 className="text-xl font-bold text-slate-800">{selectedDeptDetails} - Absentees by Class</h3>
-              <button 
+              <button
                 onClick={() => setSelectedDeptDetails(null)}
                 className="text-slate-400 hover:text-slate-600 transition-colors"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
-            
+
             <div className="p-6">
               {/* Tabs */}
               <div className="flex border-b border-slate-200 mb-4">
-                {['2nd Year', '3rd Year'].map(year => (
+                {['1st Year', '2nd Year', '3rd Year'].map(year => (
                   <button
                     key={year}
                     onClick={() => setActiveTab(year)}
-                    className={`flex-1 py-2 text-sm font-semibold border-b-2 transition-colors ${
-                      activeTab === year 
-                        ? 'border-indigo-600 text-indigo-600' 
-                        : 'border-transparent text-slate-400 hover:text-slate-600 hover:border-slate-300'
-                    }`}
+                    className={`flex-1 py-2 text-sm font-semibold border-b-2 transition-colors ${activeTab === year
+                      ? 'border-indigo-600 text-indigo-600'
+                      : 'border-transparent text-slate-400 hover:text-slate-600 hover:border-slate-300'
+                      }`}
                   >
                     {year}
                   </button>
                 ))}
               </div>
-              
+
               {/* Content */}
               <div className="space-y-3">
                 {getDetailedStats(selectedDeptDetails)?.[activeTab]?.map(item => (
@@ -668,9 +620,9 @@ const AdminDashboard = () => {
                 ))}
               </div>
             </div>
-            
+
             <div className="p-4 border-t border-slate-100 bg-slate-50 text-right">
-              <button 
+              <button
                 onClick={() => setSelectedDeptDetails(null)}
                 className="px-5 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-100 font-semibold transition-colors text-sm shadow-sm"
               >
@@ -690,22 +642,22 @@ const AdminDashboard = () => {
                 <Calendar className="w-5 h-5 text-indigo-600" />
                 View Approved Data by Date
               </h3>
-              <button 
+              <button
                 onClick={() => setShowViewDataModal(false)}
                 className="text-slate-400 hover:text-slate-600 transition-colors"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
-            
+
             <div className="p-6">
               {/* Date Input */}
               <div className="flex items-center space-x-3 mb-6 bg-slate-50 p-3.5 rounded-xl border border-slate-100 max-w-sm">
                 <span className="text-sm font-semibold text-slate-600">Select Date:</span>
-                <input 
-                  type="date" 
-                  value={modalDate} 
-                  onChange={(e) => setModalDate(e.target.value)} 
+                <input
+                  type="date"
+                  value={modalDate}
+                  onChange={(e) => setModalDate(e.target.value)}
                   className="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-white font-medium"
                 />
               </div>
@@ -745,9 +697,9 @@ const AdminDashboard = () => {
                 )}
               </div>
             </div>
-            
+
             <div className="p-4 border-t border-slate-100 bg-slate-50 text-right">
-              <button 
+              <button
                 onClick={() => setShowViewDataModal(false)}
                 className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition-colors text-sm shadow-sm"
               >
@@ -758,59 +710,6 @@ const AdminDashboard = () => {
         </div>
       )}
 
-      {/* Printable Report Section */}
-      <div id="printable-report" className="hidden print:block absolute inset-0 bg-white z-[9999] p-8 text-black min-h-screen">
-        {printData && (
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center border-b-2 border-black pb-4 mb-6">
-              <h1 className="text-2xl font-bold uppercase text-slate-800">Sri Ramakrishna Polytechnic College</h1>
-              <h2 className="text-xl font-semibold mt-2">Department of {printData.dept}</h2>
-              <h3 className="text-lg mt-1 font-medium text-slate-600">Daily Absentee Summary Report</h3>
-            </div>
-
-            <div className="flex justify-between mb-6 text-sm font-bold">
-              <div>Class: {printData.year === 'All' ? 'Entire Department (All Classes)' : `${printData.year} - Section ${printData.section}`}</div>
-              <div>Date: {printData.date}</div>
-            </div>
-
-            <table className="w-full text-left border-collapse mb-12 border border-black">
-              <thead>
-                <tr>
-                  <th className="border border-black p-2 bg-gray-100 text-center">Class / Section</th>
-                  <th className="border border-black p-2 bg-gray-100 text-center">Total Strength</th>
-                  <th className="border border-black p-2 bg-gray-100 text-center">Absentees Count</th>
-                  <th className="border border-black p-2 bg-gray-100 text-center">Attendance %</th>
-                </tr>
-              </thead>
-              <tbody>
-                {printData.rows.length > 0 ? (
-                  printData.rows.map((row, idx) => (
-                    <tr key={idx}>
-                      <td className="border border-black p-2 text-center font-semibold">{row.class}</td>
-                      <td className="border border-black p-2 text-center">{row.total}</td>
-                      <td className="border border-black p-2 text-center font-bold text-red-600">{row.absent}</td>
-                      <td className="border border-black p-2 text-center">{row.percent}%</td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="4" className="border border-black p-8 text-center italic text-gray-500">No absentees to report today.</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-
-            <div className="flex justify-between mt-32 pt-8">
-              <div className="text-center">
-                <div className="border-t border-black w-48 mx-auto pt-2 font-bold">HOD Signature</div>
-              </div>
-              <div className="text-center">
-                <div className="border-t border-black w-48 mx-auto pt-2 font-bold">Principal Signature</div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
     </PageWrapper>
   );
 };

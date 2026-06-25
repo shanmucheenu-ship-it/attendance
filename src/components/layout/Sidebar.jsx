@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { ClipboardList, BarChart2, LayoutDashboard, LogOut, Users, GraduationCap } from 'lucide-react';
+import { ClipboardList, LayoutDashboard, LogOut, Users, GraduationCap } from 'lucide-react';
 import { AppContext } from '../../context/AppContext';
 
 export const Sidebar = ({ isOpen, setIsOpen }) => {
@@ -24,10 +24,13 @@ export const Sidebar = ({ isOpen, setIsOpen }) => {
 
   const hodLinks = [
     { name: 'Dashboard', path: '/hod/dashboard', icon: LayoutDashboard },
+    { name: 'Detailed Review', path: '/hod/detailed-review', icon: ClipboardList },
+    { name: 'Student Requests', path: '/hod/students', icon: GraduationCap },
   ];
 
   const facultyLinks = [
     { name: 'Submit Attendance', path: '/faculty/submit', icon: ClipboardList },
+    { name: 'Detailed Attendance', path: '/faculty/detailed-submit', icon: ClipboardList },
     { name: 'Student Details', path: '/faculty/students', icon: GraduationCap },
   ];
 

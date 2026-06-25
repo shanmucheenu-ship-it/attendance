@@ -26,6 +26,7 @@ export const WaveChart = ({ data, xKey, yKey, color = "#2563EB" }) => {
             strokeWidth={3}
             fillOpacity={1} 
             fill="url(#colorWave)" 
+            connectNulls={false}
           />
         </AreaChart>
       </ResponsiveContainer>

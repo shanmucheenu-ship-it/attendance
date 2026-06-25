@@ -10,9 +10,10 @@ import { Button } from '../../components/ui/Button';
 import { AppContext } from '../../context/AppContext';
 
 const AttendanceSummary = () => {
-  const { auth, attendance, submitAttendance, showToast, students: contextStudents } = useContext(AppContext);
+  const { auth, attendance, submitAttendance, students: contextStudents } = useContext(AppContext);
   const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
+  const [editedAbsentees, setEditedAbsentees] = useState(null);
 
   const session = attendance.currentSession;
 
@@ -31,11 +32,9 @@ const AttendanceSummary = () => {
 
   // --- Section Level Stats ---
   const secTotal = students.length;
-  const secPresent = students.filter(s => s.status === 'Present').length;
   const secAbsent = students.filter(s => s.status === 'Absent').length;
   const secLeave = students.filter(s => s.status === 'Leave').length;
 
-  const [editedAbsentees, setEditedAbsentees] = useState(null);
   const currentAbsentees = editedAbsentees !== null ? editedAbsentees : secAbsent;
   
   const adjustedPresent = Math.max(0, secTotal - currentAbsentees);

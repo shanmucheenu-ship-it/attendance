@@ -17,8 +17,7 @@ const AttendanceHistory = ({ initialFilters, onBack }) => {
     'Computer',
     'Communication and Computer Networking',
   ];
-  const years = ['All', '2nd Year', '3rd Year'];
-  const baseSections = ['All', 'A', 'B'];
+  const years = ['All', '1st Year', '2nd Year', '3rd Year'];
   const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
@@ -113,12 +112,15 @@ const AttendanceHistory = ({ initialFilters, onBack }) => {
     const rowsToRender = [];
     if (searchParams.department === 'Computer') {
       if (searchParams.year === 'All' && searchParams.section === 'All') {
+        rowsToRender.push({ label: 'I Year Sec A', year: '1st Year', section: 'A' });
+        rowsToRender.push({ label: 'I Year Sec B', year: '1st Year', section: 'B' });
         rowsToRender.push({ label: 'II Year Sec A', year: '2nd Year', section: 'A' });
         rowsToRender.push({ label: 'II Year Sec B', year: '2nd Year', section: 'B' });
         rowsToRender.push({ label: 'III Year Sec A', year: '3rd Year', section: 'A' });
         rowsToRender.push({ label: 'III Year Sec B', year: '3rd Year', section: 'B' });
         rowsToRender.push({ label: 'Total Absentees', isTotalRow: true });
       } else if (searchParams.year === 'All') {
+        rowsToRender.push({ label: 'I Year', year: '1st Year', section: searchParams.section });
         rowsToRender.push({ label: 'II Year', year: '2nd Year', section: searchParams.section });
         rowsToRender.push({ label: 'III Year', year: '3rd Year', section: searchParams.section });
         rowsToRender.push({ label: 'Total Absentees', isTotalRow: true });
@@ -131,6 +133,7 @@ const AttendanceHistory = ({ initialFilters, onBack }) => {
       }
     } else {
       if (searchParams.year === 'All') {
+        rowsToRender.push({ label: 'I Year', year: '1st Year', section: 'Single' });
         rowsToRender.push({ label: 'II Year', year: '2nd Year', section: 'Single' });
         rowsToRender.push({ label: 'III Year', year: '3rd Year', section: 'Single' });
         rowsToRender.push({ label: 'Total Absentees', isTotalRow: true });
@@ -159,7 +162,7 @@ const AttendanceHistory = ({ initialFilters, onBack }) => {
       valuesForDay['Total Absentees'] = hasAnyData ? totalForDay : '-';
     }
 
-    let absentValue = '-';
+    let absentValue;
     if (hasTotalRow) {
       absentValue = valuesForDay['Total Absentees'];
     } else {

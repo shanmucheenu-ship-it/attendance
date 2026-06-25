@@ -8,7 +8,6 @@ import SplitText from '../components/ui/SplitText';
 
 const Landing = () => {
   const navigate = useNavigate();
-  const [supabaseStatus, setSupabaseStatus] = useState('loading');
 
   useEffect(() => {
     const checkConnection = async () => {
@@ -20,14 +19,11 @@ const Landing = () => {
         
         if (error && error.code !== 'PGRST205') {
           console.error("Supabase connection error:", error);
-          setSupabaseStatus('error');
         } else {
           console.log("Supabase connected successfully from frontend client");
-          setSupabaseStatus('connected');
         }
       } catch (err) {
         console.error("Supabase direct connection exception:", err);
-        setSupabaseStatus('error');
       }
     };
 
@@ -105,27 +101,7 @@ const Landing = () => {
       {/* Animated Stars Background */}
       <StarsBackground starColor="#000" className="absolute inset-0 flex items-center justify-center" />
 
-      {/* Supabase Status Badge */}
-      <div className="absolute top-8 right-8 z-20">
-        {supabaseStatus === 'loading' ? (
-          <span className="inline-flex items-center px-4 py-2 rounded-xl text-xs font-bold bg-slate-50 text-slate-400 border border-slate-200/50 shadow-sm">
-            <span className="w-2 h-2 mr-2 bg-slate-300 rounded-full animate-pulse"></span>
-            Checking Supabase...
-          </span>
-        ) : supabaseStatus === 'connected' ? (
-          <span className="inline-flex items-center px-4 py-2 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/60 shadow-sm">
-            <span className="w-2 h-2 mr-2 bg-emerald-500 rounded-full animate-ping"></span>
-            <span className="w-2 h-2 -ml-2 mr-2 bg-emerald-500 rounded-full absolute"></span>
-            Supabase Connected
-          </span>
-        ) : (
-          <span className="inline-flex items-center px-4 py-2 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200/60 shadow-sm">
-            <span className="w-2 h-2 mr-2 bg-rose-500 rounded-full"></span>
-            Supabase Not Connected
-          </span>
-        )}
-      </div>
-      
+
       {/* Abstract Background Elements */}
       <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] opacity-40 pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(219,234,254,1) 0%, rgba(219,234,254,0) 70%)' }} />
       <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] opacity-40 pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(243,232,255,1) 0%, rgba(243,232,255,0) 70%)' }} />
