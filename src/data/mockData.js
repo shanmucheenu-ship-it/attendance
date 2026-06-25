@@ -570,13 +570,13 @@ const generateStudents = () => {
   };
 
   const config = [
-    { name: "Automobile", code: "AUTO", classes: [{ year: "1st Year", section: "Single", count: 30 }, { year: "2nd Year", section: "Single", count: 35, custom: auto2ndYear }, { year: "3rd Year", section: "Single", count: 29, custom: auto3rdYear }] },
-    { name: "Civil", code: "CIVIL", classes: [{ year: "1st Year", section: "Single", count: 20 }, { year: "2nd Year", section: "Single", count: 24, custom: civil2ndYear }, { year: "3rd Year", section: "Single", count: 25 }] },
+    { name: "Automobile", code: "AUTO", classes: [{ year: "2nd Year", section: "Single", count: 35, custom: auto2ndYear }, { year: "3rd Year", section: "Single", count: 29, custom: auto3rdYear }] },
+    { name: "Civil", code: "CIVIL", classes: [{ year: "2nd Year", section: "Single", count: 24, custom: civil2ndYear }, { year: "3rd Year", section: "Single", count: 25 }] },
     { name: "Computer", code: "COMP", classes: [{ year: "2nd Year", section: "A", count: 37, custom: cse2ndYearA }, { year: "2nd Year", section: "B", count: 46, custom: cse2ndYearB }, { year: "3rd Year", section: "A", count: 44, custom: cse3rdYearA }, { year: "3rd Year", section: "B", count: 46, custom: cse3rdYearB }] },
-    { name: "Mechanical", code: "MECH", classes: [{ year: "1st Year", section: "Single", count: 50 }, { year: "2nd Year", section: "Single", count: 64, custom: mech2ndYear }, { year: "3rd Year", section: "Single", count: 60 }] },
-    { name: "Electrical and Electronic", code: "EEE", classes: [{ year: "1st Year", section: "Single", count: 40 }, { year: "2nd Year", section: "Single", count: 44, custom: eee2ndYear }, { year: "3rd Year", section: "Single", count: 38, custom: eee3rdYear }] },
-    { name: "Electronics and Communication", code: "ECE", classes: [{ year: "1st Year", section: "Single", count: 35 }, { year: "2nd Year", section: "Single", count: 32, custom: ece2ndYear }, { year: "3rd Year", section: "Single", count: 37, custom: ece3rdYear }] },
-    { name: "Communication and Computer Networking", code: "CCN", classes: [{ year: "1st Year", section: "Single", count: 15 }, { year: "2nd Year", section: "Single", count: 12, custom: ccn2ndYear }, { year: "3rd Year", section: "Single", count: 19, custom: ccn3rdYear }] }
+    { name: "Mechanical", code: "MECH", classes: [{ year: "2nd Year", section: "Single", count: 64, custom: mech2ndYear }, { year: "3rd Year", section: "Single", count: 60 }] },
+    { name: "Electrical and Electronic", code: "EEE", classes: [{ year: "2nd Year", section: "Single", count: 44, custom: eee2ndYear }, { year: "3rd Year", section: "Single", count: 38, custom: eee3rdYear }] },
+    { name: "Electronics and Communication", code: "ECE", classes: [{ year: "2nd Year", section: "Single", count: 32, custom: ece2ndYear }, { year: "3rd Year", section: "Single", count: 37, custom: ece3rdYear }] },
+    { name: "Communication and Computer Networking", code: "CCN", classes: [{ year: "2nd Year", section: "Single", count: 12, custom: ccn2ndYear }, { year: "3rd Year", section: "Single", count: 19, custom: ccn3rdYear }] }
   ];
 
   config.forEach(dept => {
