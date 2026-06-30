@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Users, UserX, PieChart, Download, X, Calendar, ClipboardList } from 'lucide-react';
+import { Users, UserX, PieChart, Download, X, Calendar } from 'lucide-react';
 import { PageWrapper } from '../../components/layout/PageWrapper';
 import { StatCard } from '../../components/shared/StatCard';
 import { WaveChart } from '../../components/charts/WaveChart';
@@ -385,7 +385,7 @@ const AdminDashboard = () => {
             <CardTitle>Attendance Overview (Number of Absentees Today)</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto custom-scrollbar pb-4">
               <table className="w-full text-left text-sm border-collapse">
                 <thead className="bg-slate-50 text-slate-500 uppercase text-xs">
                   <tr className="border-b border-slate-100">
@@ -514,54 +514,9 @@ const AdminDashboard = () => {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-
-        {/* Approved Submissions List */}
-        <Card className="lg:col-span-2 shadow-sm border-indigo-100">
-          <CardHeader className="bg-indigo-50/20">
-            <CardTitle className="flex items-center space-x-2">
-              <ClipboardList className="w-5 h-5 text-indigo-600" />
-              <span>Today's Approved Submissions</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-4">
-            {forwardedSubmissions.length === 0 ? (
-              <p className="text-sm text-slate-400 py-6 text-center italic">No approved attendance reports submitted today yet.</p>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm">
-                  <thead className="bg-slate-50 text-slate-500 uppercase text-xs">
-                    <tr>
-                      <th className="px-4 py-2">Date</th>
-                      <th className="px-4 py-2">Department</th>
-                      <th className="px-4 py-2">Class</th>
-                      <th className="px-4 py-2 text-center">Absentees Count</th>
-                      <th className="px-4 py-2 text-center">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {forwardedSubmissions.map(sub => (
-                      <tr key={sub.id} className="hover:bg-slate-50/50">
-                        <td className="px-4 py-3 text-slate-500">{sub.date}</td>
-                        <td className="px-4 py-3 font-semibold text-slate-800">{sub.department}</td>
-                        <td className="px-4 py-3 text-slate-600">{sub.year} - Section {sub.section}</td>
-                        <td className="px-4 py-3 text-center font-bold text-slate-800">{sub.absenteesCount}</td>
-                        <td className="px-4 py-3 text-center">
-                          <span className="inline-flex items-center rounded-full bg-green-50 text-green-700 px-2.5 py-0.5 text-xs font-semibold border border-green-200">
-                            Approved
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* CSV Export Card */}
-        <Card className="hover:border-indigo-400 transition-colors shadow-sm cursor-pointer" onClick={handleExportCSV}>
+      {/* CSV Export Card */}
+      <div className="mb-8">
+        <Card className="hover:border-indigo-400 transition-colors shadow-sm cursor-pointer max-w-md" onClick={handleExportCSV}>
           <CardContent className="p-6 flex items-center space-x-4">
             <div className="bg-indigo-50 p-4 rounded-2xl text-indigo-600">
               <Download className="h-6 w-6" />

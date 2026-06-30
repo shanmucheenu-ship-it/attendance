@@ -180,6 +180,11 @@ const Landing = () => {
           );
         })}
       </motion.div>
+
+      {/* Footer */}
+      <footer className="mt-16 text-center text-xs font-semibold text-slate-400 tracking-wider uppercase relative z-10 pb-4">
+        Designed and Developed by Oakstone Innovations
+      </footer>
     </motion.div>
   );
 };

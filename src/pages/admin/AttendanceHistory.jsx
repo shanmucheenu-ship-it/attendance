@@ -307,7 +307,7 @@ const AttendanceHistory = ({ initialFilters, onBack }) => {
           </div>
 
           {/* Scrolling Grid */}
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto custom-scrollbar pb-4">
             <table className="w-full text-left text-sm border-collapse min-w-[1000px] border-spacing-0">
               <tbody>
                 

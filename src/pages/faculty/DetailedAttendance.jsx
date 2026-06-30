@@ -178,7 +178,7 @@ const DetailedAttendance = () => {
 
               {selectedYear && selectedSection && (
                 <div className="border border-slate-200 rounded-xl overflow-hidden animate-in fade-in">
-                  <div className="overflow-x-auto">
+                  <div className="overflow-x-auto custom-scrollbar pb-4">
                     <table className="w-full text-left text-sm">
                       <thead className="bg-slate-50 text-slate-600 uppercase text-xs font-semibold">
                         <tr>

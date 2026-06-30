@@ -114,7 +114,7 @@ const IntroSplash = ({ onComplete }) => {
         initial={{ opacity: 0 }}
         animate={taglineControls}
       >
-        College Admission Management System
+        ATTENDANCE MANAGEMENT SITE
       </motion.p>
 
       {/* Loading indicator – Spinning Animation */}

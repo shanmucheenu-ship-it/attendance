@@ -12,7 +12,7 @@ export const AttendanceTable = ({ students, onToggleAttendance, readOnly = false
 
   return (
     <div className="bg-surface-white rounded-xl border border-border-gray overflow-hidden shadow-sm">
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto custom-scrollbar pb-4">
         <table className="w-full text-left text-sm">
           <thead className="bg-slate-50 text-slate-600 uppercase font-bold text-xs sticky top-0 z-10 border-b border-slate-200 shadow-sm">
             <tr>

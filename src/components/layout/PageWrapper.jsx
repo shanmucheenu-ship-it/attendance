@@ -36,9 +36,14 @@ export const PageWrapper = ({ children, title }) => {
           initial={{ opacity: 0, y: 20, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-          className="flex-1 p-4 md:p-8 overflow-y-auto w-full"
+          className="flex-1 p-4 md:p-8 overflow-y-auto w-full flex flex-col justify-between"
         >
-          {children}
+          <div>
+            {children}
+          </div>
+          <footer className="mt-8 pt-4 border-t border-slate-200/60 text-center text-xs font-semibold text-slate-400 tracking-wider uppercase pb-2">
+            Designed and Developed by Oakstone Innovations
+          </footer>
         </motion.main>
       </div>
       <Toast />
